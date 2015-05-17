@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bankclient.RegisterDocumentController">
+   <children>
+      <Button fx:id="btnRegister" layoutX="278.0" layoutY="312.0" onAction="#handleRegisterAction" prefHeight="26.0" prefWidth="100.0" text="Registreren" />
+      <Label fx:id="lblResult" alignment="CENTER" layoutX="201.0" layoutY="100.0" prefHeight="16.0" prefWidth="218.0" textFill="RED" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="184.0" layoutY="44.0" prefHeight="36.0" prefWidth="252.0" text="Registreren" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+      </Label>
+      <Label layoutX="176.0" layoutY="166.0" prefHeight="16.0" prefWidth="80.0" text="Naam:" />
+      <TextField fx:id="tfBankAddress" layoutX="276.0" layoutY="126.0" prefHeight="26.0" prefWidth="100.0" />
+      <TextField fx:id="tfName" layoutX="276.0" layoutY="162.0" prefHeight="26.0" prefWidth="100.0" />
+      <Label layoutX="177.0" layoutY="241.0" prefHeight="16.0" prefWidth="88.0" text="Wachtwoord:" />
+      <PasswordField fx:id="tfPassword1" layoutX="278.0" layoutY="236.0" prefHeight="26.0" prefWidth="100.0" />
+      <Label layoutX="176.0" layoutY="131.0" prefHeight="16.0" prefWidth="80.0" text="Bank adres:" />
+      <PasswordField fx:id="tfPassword2" layoutX="278.0" layoutY="271.0" prefHeight="26.0" prefWidth="100.0" />
+      <Label layoutX="134.0" layoutY="276.0" prefHeight="16.0" prefWidth="131.0" text="Herhaal wachtwoord:" />
+      <TextField fx:id="tfResidence" layoutX="277.0" layoutY="199.0" prefHeight="26.0" prefWidth="100.0" />
+      <Label layoutX="177.0" layoutY="203.0" prefHeight="16.0" prefWidth="80.0" text="Woonplaats:" />
+      <Button layoutX="14.0" layoutY="360.0" onAction="#handleBackAction" prefHeight="26.0" prefWidth="100.0" text="Terug" />
+   </children>
+</AnchorPane>

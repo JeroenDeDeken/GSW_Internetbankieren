@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bankclient.AccountsDocumentController">
+   <children>
+      <ListView fx:id="lbAccounts" layoutX="153.0" layoutY="14.0" prefHeight="372.0" prefWidth="433.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="153.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+      <Button layoutX="10.0" layoutY="41.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="130.0" text="Rekening bekijken" />
+      <Label fx:id="lblName" layoutX="10.0" layoutY="14.0" prefHeight="16.0" prefWidth="130.0" text="Naam" />
+      <Button layoutX="10.0" layoutY="77.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="130.0" text="Rekening openen" />
+      <Button layoutX="10.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleLogoutAction" prefHeight="26.0" prefWidth="130.0" text="Uitloggen" />
+      <Button layoutX="10.0" layoutY="127.0" mnemonicParsing="false" onAction="#handleNewTransactionAction" prefHeight="26.0" prefWidth="130.0" text="Nieuwe transactie" />
+   </children>
+</AnchorPane>
