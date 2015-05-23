@@ -6,13 +6,20 @@
 package bankclient;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
+import soapclient.ClientService;
+import soapclient.ClientServiceService;
 
 /**
  *
@@ -27,15 +34,54 @@ public class BankClient extends Application {
     
     private String lastScene = "";
     private Stage stage;
+    private ClientService service;
     private static BankClient instance;
     
     @Override
     public void start(Stage stage) throws Exception {
-        instance = this;
-        
-        this.stage = stage;
-        showFXMLDocument(LOGIN_FXML);
-        this.stage.show();
+        TextInputDialog dialog = new TextInputDialog("localhost");
+        dialog.setTitle("Bank client application");
+        dialog.setHeaderText("Please enter your banking address/url, if you are not sure what you need to fill in, please contact your bank.");
+        dialog.setContentText("Banking url:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            System.out.println("URL entered: " + result.get());
+            
+            String url = result.get();
+            String fullUrl = "http://" + url + ":8080/BankServer?wsdl";
+            
+            try {
+                ClientServiceService css = new ClientServiceService(new URL(fullUrl));
+
+                service = new ClientServiceService().getClientServicePort();
+                instance = this;
+
+                this.stage = stage;
+                showFXMLDocument(LOGIN_FXML);
+                this.stage.show();
+            }
+            catch (Exception ex) {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Bank client application");
+                alert.setHeaderText("Error");
+                alert.setContentText("Failed to connect to the server '" + url + "'!" + System.lineSeparator() + "(" + fullUrl + ")");
+
+                alert.showAndWait();
+
+                start(stage);
+            }
+        }
+        else {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Bank client application");
+            alert.setHeaderText("Error");
+            alert.setContentText("You have to enter a url/ip-address before you may continue!");
+
+            alert.showAndWait();
+            
+            start(stage);
+        }
     }
 
     /**
@@ -47,6 +93,10 @@ public class BankClient extends Application {
 
     public static BankClient getInstance() {
         return instance;
+    }
+
+    public ClientService getService() {
+        return service;
     }
 
     public Parent showFXMLDocument(String fxml) {

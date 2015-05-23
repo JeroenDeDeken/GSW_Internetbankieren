@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import soapclient.LoginStatus;
 
 /**
  *
@@ -21,7 +22,7 @@ import javafx.scene.control.TextField;
 public class LoginDocumentController implements Initializable {
     
     @FXML private Label lblResult;
-    @FXML private TextField tfBankAddress, tfName, tfPassword;
+    @FXML private TextField tfName, tfPassword;
     @FXML private Button btnLogin, btnRegister;
     
     @Override
@@ -32,9 +33,42 @@ public class LoginDocumentController implements Initializable {
     @FXML
     private void handleLoginAction(ActionEvent event) {
         btnLogin.setDisable(true);
+        lblResult.setText("");
         
-        //TODO do actual login checks
+        String username, password;
+        
+        username = tfName.getText().trim();
+        password = tfPassword.getText();
+        
+        if (username.isEmpty() || password.isEmpty()) {
+            setResult("Enter a username & password first!");
+            return;
+        }
+        
+        LoginStatus status;
+        try {
+            status = BankClient.getInstance().getService().login(username, password);
+        } catch (Exception ex) {
+            setResult("Something went wrong sending the request to the banking server." + System.lineSeparator() + "Please try again later.");
+            return;
+        }
+        
+        switch (status) {
+            case SUCCESS: break;
+            case MISSING_FIELDS: setResult("No username or password specified."); return;
+            case SERVER_ERROR: setResult("Something went wrong, try again later."); return;
+            case NOT_FOUND: setResult("Username & password combination not found."); return;
+            default: setResult("A unknown error happened, try again later."); return;
+        }
+        
         BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
+        
+        setResult("");
+    }
+    
+    private void setResult(String result) {
+        btnLogin.setDisable(false);
+        lblResult.setText(result);
     }
     
     @FXML
