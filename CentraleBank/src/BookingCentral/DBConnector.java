@@ -1,6 +1,11 @@
 package BookingCentral;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -8,32 +13,56 @@ import java.sql.Connection;
  */
 public class DBConnector {
 
-    private Connection connection;
+    private static Connection connection = null;
     
-    public DBConnector() {
-        
+    /**
+     * Connect to the database.
+     * @return If the connection was successful.
+     */
+    protected static boolean connect() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:BankServer.db");
+            return true;
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return false;
+        }
     }
     
     /**
-     * connect to the database
+     * Disconnect from the database.
+     * @return If the disconnecting was successful.
      */
-    protected void connect() {
-        
-    }
-    
-    /**
-     * disconnect from the database
-     */
-    protected void disconnect() {
-        
+    protected static boolean disconnect() {
+        try {
+            if (connection != null) connection.close();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
     
     /**
      * write a given transaction to the database for later processing
      * @param transaction
      */
-    protected void logTransaction(Transaction transaction) {
-        
+    protected static void logTransaction(Transaction transaction) {
+        if (connection == null) connect();
+
+        throw new NotImplementedException();
+    }
+    
+    /**
+     * Change the transaction state of a given transaction
+     * @param transaction
+     * @param state 
+     */
+    protected static void changeTransactionState(Transaction transaction, TransactionState state) {
+        if (connection == null) connect();
+
+        throw new NotImplementedException();
     }
     
     /**

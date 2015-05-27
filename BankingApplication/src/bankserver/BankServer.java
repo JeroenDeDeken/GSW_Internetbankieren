@@ -96,6 +96,7 @@ public class BankServer {
         if (findAccount(accountNumber)) {
             double oldBalance = DBConnector.getAccountBalance(accountNumber);
             double newBalance = oldBalance - amount;
+            // TODO: IMPLEMENT POSSIBLE NEGATIVE VALUES
             if (newBalance >= 0) {
                 DBConnector.setAccountBalance(accountNumber, newBalance);
                 retVal = true;
@@ -109,7 +110,7 @@ public class BankServer {
      * Check all unprocessed transactions on the database and send them to the banking central.
      * When the banking central is unavailable the state will not be changed so it can later on be processed
      */
-    private void processTransactions() {
+    private void sendUnprocessedTransactions() {
         Iterable<Transaction> transactionList = DBConnector.getUnprocessedTransactions();
         
         for(Transaction transaction : transactionList) {

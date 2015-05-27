@@ -1,23 +1,58 @@
 package bankserver;
 
+import java.util.UUID;
+
 /**
  *
  * @author Jeroen
  */
 public class Transaction {
     
+    private long transactionId;
     private String debitor;
     private String creditor;
     private double amount;
     private String message;
     
+    /**
+     * Create a new transaction without identifier
+     * @param debitor
+     * @param creditor
+     * @param amount
+     * @param message 
+     */
     public Transaction(String debitor, String creditor, double amount, String message) {
+        this.transactionId = UUID.randomUUID().getMostSignificantBits();
+        this.debitor = debitor;
+        this.creditor = creditor;
+        this.amount = amount;
+        this.message = message;
+    }
+    
+    /**
+     * Create a new transaction with a specified transactionID
+     * @param transactionId
+     * @param debitor
+     * @param creditor
+     * @param amount
+     * @param message 
+     */
+    public Transaction(long transactionId, String debitor, String creditor, double amount, String message) {
+        this.transactionId = transactionId;
         this.debitor = debitor;
         this.creditor = creditor;
         this.amount = amount;
         this.message = message;
     }
 
+    /**
+     * Gets the unique identifier of this transaction.
+     * @return a UUID representing only this transaction
+     */
+    public long getTransactionId() {
+        return transactionId;
+    }
+    
     /**
      * Gets the account where the money should be withdrawn from
      * @return a string representing the IBAN nr
@@ -43,7 +78,7 @@ public class Transaction {
     }
 
     /**
-     * Gets the message suplied to this transaction
+     * Gets the message supplied to this transaction
      * @return a string containing the message
      */
     public String getMessage() {

@@ -16,14 +16,6 @@ public class BankingCentral {
     }
     
     /**
-     * Used to test the connection between bank and central
-     * @return a enum code representing the state of the connection
-     */
-    private HeartbeatCode bankHeartBeat() {
-        throw new NotImplementedException();
-    }
-    
-    /**
      * Check the database and process unfinished transactions
      */
     private void ProcessTransactions() {

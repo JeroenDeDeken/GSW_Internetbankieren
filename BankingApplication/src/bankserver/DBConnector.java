@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -68,6 +70,10 @@ public class DBConnector {
             }
             
             String sql, table;
+            
+            /**
+             * Create Table Account
+             */
             table = "Account";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
@@ -79,9 +85,14 @@ public class DBConnector {
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
+            
+            /**
+             * Create table Transactions
+             */
             table = "Transactions"; //Transaction is a reservered keyword
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
+                        "   `DbID`          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
                         "   `TransactionID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
                         "   `debitIBAN`     TEXT NOT NULL,\n" +
                         "   `creditIBAN`    TEXT NOT NULL,\n" +
@@ -92,6 +103,10 @@ public class DBConnector {
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
+            
+            /**
+             * Create table Customer
+             */
             table = "Customer";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
@@ -104,6 +119,10 @@ public class DBConnector {
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
+            
+            /**
+             * Create table Session
+             */
             table = "Session";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
@@ -114,6 +133,10 @@ public class DBConnector {
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
+            
+            /**
+             * Create table CustomerAccount
+             */
             table = "CustomerAccount";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
@@ -123,6 +146,10 @@ public class DBConnector {
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
+            
+            /**
+             * Create table AccountTransaction
+             */
             table = "AccountTransaction";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
@@ -303,24 +330,69 @@ public class DBConnector {
     
     /**
      * Get the balance for a given account
-     * @param accountNumber
+     * @param accountIBANNumber
      * @return 
      */
-    protected static double getAccountBalance(String accountNumber) {
-        if (connection == null) connect();
+    protected static double getAccountBalance(String accountIBANNumber) {
+        if (connection == null) {
+            if (!connect()) {
+                return -99999999;
+            }
+        }
 
-        throw new NotImplementedException();
+        ResultSet result = null;
+        double returnValue = -99999999;
+        String sql = "SELECT Balance FROM Account WHERE IBAN = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, accountIBANNumber);
+            result = stmt.executeQuery(sql);
+            
+            if (result.next()) {
+                returnValue = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                result = null;
+            }
+        }
+
+        return returnValue;
     }
     
     /**
      * Store a new balance for the given account
-     * @param accountNumber
-     * @param balance 
+     * @param accountIBANNumber
+     * @param balance
+     * @return true when successful
      */
-    protected static void setAccountBalance(String accountNumber, double balance) {
-        if (connection == null) connect();
+    protected static boolean setAccountBalance(String accountIBANNumber, double balance) {
+        if (connection == null) {
+            if (!connect()) {
+                return false;
+            }
+        }
 
-        throw new NotImplementedException();
+        String sql = "UPDATE Account SET Balance = ? WHERE IBAN = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDouble(1, balance);
+            stmt.setString(2, accountIBANNumber);
+            stmt.executeUpdate();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return true;
     }
     
     /**
@@ -345,32 +417,105 @@ public class DBConnector {
     /**
      * write a given transaction to the database for later processing
      * @param transaction
+     * @return true when successful
      */
-    protected static void logTransaction(Transaction transaction) {
-        if (connection == null) connect();
-
-        throw new NotImplementedException();
+    protected static boolean logTransaction(Transaction transaction) {
+        if (connection == null) {
+            if (!connect()) {
+                return false;
+            }
+        }
+ 
+        String sql = "INSERT INTO Transactions (TransactionID, debitIBAN, creditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setLong(1, transaction.getTransactionId());
+            stmt.setString(2, transaction.getDebitor());
+            stmt.setString(3, transaction.getCreditor());
+            stmt.setDouble(4, transaction.getAmount());
+            stmt.setString(5, transaction.getMessage());
+            stmt.setInt(6, TransactionState.INITIAL.value);
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+        
+        return true;
     }
     
     /**
      * Change the transaction state of a given transaction
      * @param transaction
-     * @param state 
+     * @param state
+     * @return true when successful
      */
-    protected static void changeTransactionState(Transaction transaction, TransactionState state) {
-        if (connection == null) connect();
-
-        throw new NotImplementedException();
+    protected static boolean changeTransactionState(Transaction transaction, TransactionState state) {
+        if (connection == null) {
+            if (!connect()) {
+                return false;
+            }
+        }
+ 
+        String sql = "UPDATE Transactions SET State = ? WHERE TransactionID = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, state.value);
+            stmt.setLong(2, transaction.getTransactionId());
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+        
+        return true;
     }
     
     /**
      * get a list with all the transaction which still have the waiting state
-     * @return 
+     * @return null when failed
      */
     protected static Collection<Transaction> getUnprocessedTransactions() {
-        if (connection == null) connect();
+        if (connection == null) {
+            if (!connect()) {
+                return null;
+            }
+        }
+ 
+        ResultSet result = null;
+        Collection<Transaction> returnValue = new TreeSet<>();
 
-        throw new NotImplementedException();
+        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message FROM Transaction WHERE State = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, TransactionState.WAITING.value);
+            result = stmt.executeQuery(sql);
+            
+            while (result.next()) {
+                long transactionId = result.getLong("TransactionID");
+                String debitIBAN = result.getString("debitIBAN");
+                String creditIBAN = result.getString("creditIBAN");
+                double amount = result.getDouble("Amount");
+                String message = result.getString("Message");
+                
+                Transaction thisTransaction = new Transaction(transactionId, debitIBAN, creditIBAN, amount, message);
+                returnValue.add(thisTransaction);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                result = null;
+            }
+        }
+
+        return returnValue;
     }
     
     /**
