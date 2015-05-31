@@ -84,4 +84,20 @@ public class Transaction {
     public String getMessage() {
         return message;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        Transaction otherTransaction = (Transaction) o;
+        boolean retval = false;
+        
+        if (this.transactionId == otherTransaction.transactionId
+                && (this.debitor == null ? otherTransaction.debitor == null : this.debitor.equals(otherTransaction.debitor))
+                && (this.creditor == null ? otherTransaction.creditor == null : this.creditor.equals(otherTransaction.creditor))
+                && this.amount == otherTransaction.amount
+                && (this.message == null ? otherTransaction.message == null : this.message.equals(otherTransaction.message))) {
+            retval = true;
+        }
+        
+        return retval;
+    }
 }

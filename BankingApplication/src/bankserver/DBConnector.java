@@ -1,5 +1,9 @@
 package bankserver;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -9,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,7 +33,7 @@ public class DBConnector {
      * Connect to the database.
      * @return If the connection was successful.
      */
-    protected static boolean connect() {
+    public static boolean connect() {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:BankServer.db");
@@ -43,13 +48,29 @@ public class DBConnector {
      * Disconnect from the database.
      * @return If the disconnecting was successful.
      */
-    protected static boolean disconnect() {
+    public static boolean disconnect() {
         try {
             if (connection != null) connection.close();
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
             return false;
+        }
+    }
+    
+    /**
+     * When testing we delete the database after the tests to make a clean testrun every time
+     */
+    public static void removeDatabase() {
+        disconnect();
+        
+        Path path = FileSystems.getDefault().getPath("D:\\Git\\GSW_Internetbankieren\\BankingApplication", "BankServer.db");
+        System.out.println("Delete file " + path.toString());
+        try {
+            Files.deleteIfExists(path);
+        }
+        catch (IOException e) {
+            System.out.println("Exception: " + e.getMessage());
         }
     }
     
@@ -93,7 +114,7 @@ public class DBConnector {
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
                         "   `DbID`          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
-                        "   `TransactionID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
+                        "   `TransactionID` LONG NOT NULL,\n" +
                         "   `debitIBAN`     TEXT NOT NULL,\n" +
                         "   `creditIBAN`    TEXT NOT NULL,\n" +
                         "   `Amount`        DECIMAL NOT NULL,\n" +
@@ -312,7 +333,7 @@ public class DBConnector {
      * @param accountNumber
      * @return 
      */
-    protected static boolean checkCustomerForAccount(String accountNumber) {
+    public static boolean checkCustomerForAccount(String accountNumber) {
         boolean exists = false; //TODO update with new database set
         //TODO LET OP SQL INJECTIE!!!!!
 //        String sql = "SELECT COUNT(*) FROM Accounts WHERE lower(AccountNr) = lower(" + accountNumber + ")";
@@ -333,7 +354,7 @@ public class DBConnector {
      * @param accountIBANNumber
      * @return 
      */
-    protected static double getAccountBalance(String accountIBANNumber) {
+    public static double getAccountBalance(String accountIBANNumber) {
         if (connection == null) {
             if (!connect()) {
                 return -99999999;
@@ -341,12 +362,12 @@ public class DBConnector {
         }
 
         ResultSet result = null;
-        double returnValue = -99999999;
+        double returnValue = -88888888;
         String sql = "SELECT Balance FROM Account WHERE IBAN = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, accountIBANNumber);
-            result = stmt.executeQuery(sql);
+            result = stmt.executeQuery();
             
             if (result.next()) {
                 returnValue = result.getInt(1);
@@ -373,7 +394,7 @@ public class DBConnector {
      * @param balance
      * @return true when successful
      */
-    protected static boolean setAccountBalance(String accountIBANNumber, double balance) {
+    public static boolean setAccountBalance(String accountIBANNumber, double balance) {
         if (connection == null) {
             if (!connect()) {
                 return false;
@@ -390,6 +411,7 @@ public class DBConnector {
             
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
         }
 
         return true;
@@ -397,21 +419,56 @@ public class DBConnector {
     
     /**
      * write the data to the database which is needed for remembering a new account
+     * @param IBANNumber
+     * @return 
      */
-    protected static void createNewCustomerAccount() {
-        if (connection == null) connect();
+    public static boolean createNewCustomerAccount(String IBANNumber) {
+        if (connection == null) {
+            if (!connect()) {
+                return false;
+            }
+        }
 
-        throw new NotImplementedException();
+        String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?, 0, 0);";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, IBANNumber);
+            stmt.executeUpdate();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+
+        return true;
     }
     
     /**
      * remove all account data for a customer
      * @param accountNumber
+     * @return 
      */
-    protected static void removeCustomerAccount(String accountNumber) {
-        if (connection == null) connect();
+    public static boolean removeCustomerAccount(String accountNumber) {
+        if (connection == null) {
+            if (!connect()) {
+                return false;
+            }
+        }
 
-        throw new NotImplementedException();
+        String sql = "DELETE FROM Account WHERE IBAN = ?;";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, accountNumber);
+            stmt.executeUpdate();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+
+        return true;
     }
     
     /**
@@ -419,7 +476,7 @@ public class DBConnector {
      * @param transaction
      * @return true when successful
      */
-    protected static boolean logTransaction(Transaction transaction) {
+    public static boolean insertTransaction(Transaction transaction) {
         if (connection == null) {
             if (!connect()) {
                 return false;
@@ -451,7 +508,7 @@ public class DBConnector {
      * @param state
      * @return true when successful
      */
-    protected static boolean changeTransactionState(Transaction transaction, TransactionState state) {
+    public static boolean changeTransactionState(Transaction transaction, TransactionState state) {
         if (connection == null) {
             if (!connect()) {
                 return false;
@@ -477,7 +534,7 @@ public class DBConnector {
      * get a list with all the transaction which still have the waiting state
      * @return null when failed
      */
-    protected static Collection<Transaction> getUnprocessedTransactions() {
+    public static Set<Transaction> getUnprocessedTransactions() {
         if (connection == null) {
             if (!connect()) {
                 return null;
@@ -485,12 +542,12 @@ public class DBConnector {
         }
  
         ResultSet result = null;
-        Collection<Transaction> returnValue = new TreeSet<>();
+        Set<Transaction> returnValue = new HashSet<>();
 
-        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message FROM Transaction WHERE State = ?";
+        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message FROM Transactions WHERE State = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, TransactionState.WAITING.value);
-            result = stmt.executeQuery(sql);
+            result = stmt.executeQuery();
             
             while (result.next()) {
                 long transactionId = result.getLong("TransactionID");
@@ -523,7 +580,7 @@ public class DBConnector {
      * @param severity
      * @param message 
      */
-    protected static void writeLogging(String severity, String message) {
+    public static void writeLogging(String severity, String message) {
         if (connection == null) connect();
 
         throw new NotImplementedException();

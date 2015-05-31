@@ -35,7 +35,7 @@ public class BankServer {
     private boolean processTransaction(Transaction transaction) {
         boolean retVal = false;
         
-        DBConnector.logTransaction(transaction);
+        DBConnector.insertTransaction(transaction);
         
         if (debitAccount(transaction.getDebitor(), transaction.getAmount())) {
             if (creditAccount(transaction.getCreditor(), transaction.getAmount())){
