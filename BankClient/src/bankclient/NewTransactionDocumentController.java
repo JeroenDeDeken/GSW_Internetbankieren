@@ -32,17 +32,19 @@ public class NewTransactionDocumentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        //TODO list the customers accounts in the ChoiceBox & combobox
     }
     
     @FXML
     private void handleCreateTransactionAction(ActionEvent event) {
         //TODO create new transaction
+        //Check input
+        //Check result of server
     }
     
     @FXML
     private void handleBackAction(ActionEvent event) {
-        //TODO back, go to the last account
+        BankClient.goBack();
     }
     
     @FXML

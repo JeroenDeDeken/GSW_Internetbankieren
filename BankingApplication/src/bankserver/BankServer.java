@@ -7,14 +7,20 @@ import javax.xml.ws.Endpoint;
  * @author Jeroen
  */
 public class BankServer {
+    private static BankServer bs;
+    public static BankServer getInstance() {
+        if (bs == null) bs = new BankServer();
+        return bs;
+    }
 
+    //The banking code used for IBAN
+    public static final String bankCode = "GSW";
     private static final String soapUrl = "http://localhost:8080/BankServer";
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         DBConnector.createDatabase();
         launchSoapClientService();
     }
@@ -32,25 +38,22 @@ public class BankServer {
      * @param transaction
      * @return false when transaction could not be processed
      */
-    private boolean processTransaction(Transaction transaction) {
-        boolean retVal = false;
+    public TransactionState processTransaction(Transaction transaction) {
+        TransactionState retVal = TransactionState.FAILED;
         
         DBConnector.insertTransaction(transaction);
         
         if (debitAccount(transaction.getDebitor(), transaction.getAmount())) {
             if (creditAccount(transaction.getCreditor(), transaction.getAmount())){
-                DBConnector.changeTransactionState(transaction, TransactionState.SUCCEEDED);
+                retVal = TransactionState.SUCCEEDED;
             }
             else {
-                DBConnector.changeTransactionState(transaction, TransactionState.WAITING);
+                retVal = TransactionState.WAITING;
                 sendTransactionToCentral(transaction);
             }
-            retVal = true;
         }
-        else {
-            DBConnector.changeTransactionState(transaction, TransactionState.FAILED);
-        }
-
+        DBConnector.changeTransactionState(transaction, retVal);
+        
         return retVal;
     }
 
@@ -133,5 +136,14 @@ public class BankServer {
         else {
             DBConnector.changeTransactionState(transaction, TransactionState.WAITING);
         }
+    }
+    
+    public boolean isValidIBAN(String IBAN) {
+        if (IBAN == null) return false;
+        if (IBAN.length() != 13) return false;
+        if (!IBAN.substring(0, 3).matches("[a-zA-Z]+")) return false;
+        if (!IBAN.substring(3, 13).matches("[0-9]+")) return false;
+        
+        return true;
     }
 }
