@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. --><xs:schema xmlns:tns="http://bankserver/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://bankserver/">
 
+<xs:element name="createAccount" type="tns:createAccount"></xs:element>
+
+<xs:element name="createAccountResponse" type="tns:createAccountResponse"></xs:element>
+
 <xs:element name="createTransaction" type="tns:createTransaction"></xs:element>
 
 <xs:element name="createTransactionResponse" type="tns:createTransactionResponse"></xs:element>
@@ -24,6 +28,22 @@
 
 <xs:element name="registerResponse" type="tns:registerResponse"></xs:element>
 
+<xs:complexType name="createAccount">
+<xs:sequence>
+<xs:element name="arg0" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createAccountResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:account" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="account">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="getAccounts">
 <xs:sequence>
 <xs:element name="arg0" type="xs:int"></xs:element>
@@ -31,29 +51,39 @@
 </xs:complexType>
 
 <xs:complexType name="getAccountsResponse">
-<xs:sequence></xs:sequence>
+<xs:sequence>
+<xs:element name="return" type="tns:account" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="login">
 <xs:sequence>
-<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="arg1" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="username" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="password" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="loginResponse">
 <xs:sequence>
 <xs:element name="return" type="tns:loginStatus" minOccurs="0"></xs:element>
+<xs:element name="sessionID" type="xs:int" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getTransactionsForAccount">
 <xs:sequence>
 <xs:element name="arg0" type="xs:int"></xs:element>
+<xs:element name="arg1" type="xs:int"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getTransactionsForAccountResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:transaction" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="transaction">
 <xs:sequence></xs:sequence>
 </xs:complexType>
 
@@ -68,14 +98,16 @@
 </xs:complexType>
 
 <xs:complexType name="createTransactionResponse">
-<xs:sequence></xs:sequence>
+<xs:sequence>
+<xs:element name="return" type="tns:newTransactionStatus" minOccurs="0"></xs:element>
+</xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="register">
 <xs:sequence>
-<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="arg1" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="arg2" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="username" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="password" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="residense" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
@@ -88,7 +120,6 @@
 <xs:complexType name="logout">
 <xs:sequence>
 <xs:element name="arg0" type="xs:int"></xs:element>
-<xs:element name="arg1" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
@@ -101,6 +132,15 @@
 <xs:enumeration value="success"></xs:enumeration>
 <xs:enumeration value="missingFields"></xs:enumeration>
 <xs:enumeration value="notFound"></xs:enumeration>
+<xs:enumeration value="serverError"></xs:enumeration>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="newTransactionStatus">
+<xs:restriction base="xs:string">
+<xs:enumeration value="success"></xs:enumeration>
+<xs:enumeration value="invalidIBAN"></xs:enumeration>
+<xs:enumeration value="invalidAmount"></xs:enumeration>
 <xs:enumeration value="serverError"></xs:enumeration>
 </xs:restriction>
 </xs:simpleType>

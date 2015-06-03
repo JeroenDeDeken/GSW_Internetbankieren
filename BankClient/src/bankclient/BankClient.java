@@ -37,6 +37,8 @@ public class BankClient extends Application {
     private ClientService service;
     private static BankClient instance;
     
+    private Integer sessionID = -1;
+    
     @Override
     public void start(Stage stage) throws Exception {
         TextInputDialog dialog = new TextInputDialog("localhost");
@@ -79,8 +81,6 @@ public class BankClient extends Application {
             alert.setContentText("You have to enter a url/ip-address before you may continue!");
 
             alert.showAndWait();
-            
-            start(stage);
         }
     }
 
@@ -97,6 +97,21 @@ public class BankClient extends Application {
 
     public ClientService getService() {
         return service;
+    }
+
+    public static Integer getSessionID() {
+        return instance.sessionID;
+    }
+
+    public static void setSessionID(Integer sessionID) {
+        instance.sessionID = sessionID;
+    }
+
+    /**
+     * Goes to the previous FXML
+     */
+    public static void goBack() {
+        instance.showFXMLDocument(instance.lastScene);
     }
 
     public Parent showFXMLDocument(String fxml) {

@@ -28,12 +28,12 @@ public class TransactionDocument implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        //TODO get transaction details
     }
     
     @FXML
     private void handleBackAction(ActionEvent event) {
-        //TODO back, go to the last account
+        BankClient.goBack();
     }
     
     @FXML

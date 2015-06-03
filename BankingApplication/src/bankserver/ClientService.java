@@ -5,8 +5,14 @@
  */
 package bankserver;
 
+import java.util.List;
 import javafx.util.Pair;
+import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.ws.Holder;
 
 /**
  *
@@ -36,6 +42,13 @@ public class ClientService {
         serverError,
     }
     
+    public enum newTransactionStatus {
+        success,
+        invalidIBAN,
+        invalidAmount,
+        serverError,
+    }
+    
     public ClientService() {
         
     }
@@ -47,7 +60,7 @@ public class ClientService {
      * @param residence The residence of the user, may not be empty.
      * @return Register status code.
      */
-    public registerStatus register(String username, String password, String residence) {
+    public registerStatus register(@WebParam(name = "username") String username, @WebParam(name = "password") String password,@WebParam(name = "residense") String residence) {
         username = username.trim();
         if (username.isEmpty() || password.isEmpty() || residence.trim().isEmpty()) return registerStatus.missingFields;
         
@@ -71,47 +84,84 @@ public class ClientService {
      * Login a user with the provided username & password.
      * @param username
      * @param password
+     * @param sessionID
      * @return The status code of the login, on success it will contain also the session id on success.
      */
-    public Pair<loginStatus, Integer> login(String username, String password) {
+    public loginStatus login(@WebParam(name = "username") String username, @WebParam(name = "password") String password ,
+                               @WebParam(name = "sessionID", mode = WebParam.Mode.OUT) Holder<Integer> sessionID) {
         username = username.trim();
-        if (username.isEmpty() || password.isEmpty()) return new Pair<>(loginStatus.missingFields, -1);
-        
-        Integer sessionID = -1;
+        if (username.isEmpty() || password.isEmpty()) return loginStatus.missingFields;
         
         try {
             Integer result = DBConnector.loginUser(username, password);
             if (result == null) {
-                return new Pair<>(loginStatus.serverError, -1);
+                return loginStatus.serverError;
             } else if (result < 0) {
-                return new Pair<>(loginStatus.notFound, -1);
+                return loginStatus.notFound;
             }
-            return new Pair<>(loginStatus.success, result);
+            sessionID.value = result;
+            return loginStatus.success;
         } catch (Exception ex) {
-            return new Pair<>(loginStatus.serverError, -1);
+            return loginStatus.serverError;
         }
     }
     
     /**
-     * Login a user with the provided username & password.
+     * Logout a user with the provided session ID.
      * @param sessionID The sessionID of the session to close.
-     * @param username The username of the user to logout.
      */
-    public void logout(int sessionID, String username) {
-        
-        //TODO destroy the session with the username
-        
+    public void logout(int sessionID) {
+        DBConnector.logoutUser(sessionID);
     }
     
-    public void createTransaction(int sessionID, String fromAccount, String toAccount, double amount, String description) {
+    /**
+     * 
+     * @param sessionID
+     * @param fromAccount
+     * @param toAccount
+     * @param amount
+     * @param description
+     * @return 
+     */
+    public newTransactionStatus createTransaction(int sessionID, String fromAccount, String toAccount, double amount, String description) {
+        
+        if (amount <= 0) return newTransactionStatus.invalidAmount;
+        if (!BankServer.getInstance().isValidIBAN(fromAccount) || !BankServer.getInstance().isValidIBAN(toAccount)) return newTransactionStatus.invalidIBAN;
+        
+        //TODO check if sessionID user contains fromAccount IBAN
+        
+        Transaction transaction = new Transaction(fromAccount, toAccount, amount, description);
+        
+        if (BankServer.getInstance().processTransaction(transaction) != TransactionState.FAILED) {
+            return newTransactionStatus.serverError;
+        }
+        return newTransactionStatus.success;
+    }
+    
+    //TODO return result
+    public Account createAccount(int sessionID) {
         //TODO
+        //Determine the credit
+        //Generate a new IBAN (IBAN code length 3) + (AccountID length 10))
+        
+        Account account = new Account(0, 0);
+        
+        //check input
+        //create transaction
+        //save to database
+        
+        DBConnector.createNewCustomerAccount(account);
+        
+        return account;
     }
     
-    public void getAccounts(int sessionID) {
+    public List<Account> getAccounts(int sessionID) {
         //TODO check session, get user, return array
+        return null;
     }
     
-    public void getTransactionsForAccount(int sessionID) {
+    public List<Transaction> getTransactionsForAccount(int sessionID, int accountID) {
         //TODO check session, get user, return array
+        return null;
     }
 }

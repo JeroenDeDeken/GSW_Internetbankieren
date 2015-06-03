@@ -91,16 +91,16 @@ public class DBConnector {
             String sql, table;
             
             /**
-             * Create Table Account
+             * Create table Account
              */
             table = "Account";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
-                        "   `AccountID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
-                        "   `IBAN`      TEXT NOT NULL,\n" +
-                        "   `Balance`   DECIMAL NOT NULL,\n" +
-                        "   `Credit`    DECIMAL NOT NULL\n" +
-                        ");";
+                      "   `AccountID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
+                      "   `IBAN`      TEXT NOT NULL,\n" +
+                      "   `Balance`   DECIMAL NOT NULL,\n" +
+                      "   `Credit`    DECIMAL NOT NULL\n" +
+                      ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
@@ -108,7 +108,7 @@ public class DBConnector {
             /**
              * Create table Transactions
              */
-            table = "Transactions"; //Transaction is a reservered keyword
+            table = "Transaction"; //Transaction is a reservered keyword
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
                         "   `DbID`          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
@@ -129,12 +129,12 @@ public class DBConnector {
             table = "Customer";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
-                        "   `CustomerID`  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
-                        "   `Username`    TEXT NOT NULL UNIQUE,\n" +
-                        "   `Password`    TEXT NOT NULL,\n" +
-                        "   `Name`        TEXT NOT NULL,\n" +
-                        "   `Residence`   TEXT\n" +
-                        ");";
+                      "   `CustomerID`  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
+                      "   `Username`    TEXT NOT NULL UNIQUE,\n" +
+                      "   `Password`    TEXT NOT NULL,\n" +
+                      "   `Name`        TEXT NOT NULL,\n" +
+                      "   `Residence`   TEXT\n" +
+                      ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
@@ -145,10 +145,10 @@ public class DBConnector {
             table = "Session";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
-                        "   `SessionID`   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
-                        "   `Timestamp`   DATE DEFAULT CURRENT_DATE,\n" +
-                        "   `CustomerID`  INTEGER NOT NULL REFERENCES Customer(CustomerID)\n" +
-                        ");";
+                      "   `SessionID`   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
+                      "   `Timestamp`   DATE DEFAULT CURRENT_DATE,\n" +
+                      "   `CustomerID`  INTEGER NOT NULL REFERENCES Customer(CustomerID)\n" +
+                      ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
@@ -159,9 +159,9 @@ public class DBConnector {
             table = "CustomerAccount";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
-                        "   `CustomerID`  INTEGER NOT NULL REFERENCES Customer(CustomerID),\n" +
-                        "   `AccountID`   INTEGER NOT NULL REFERENCES Account(AccountID)\n" +
-                        ");";
+                      "   `CustomerID`  INTEGER NOT NULL REFERENCES Customer(CustomerID),\n" +
+                      "   `AccountID`   INTEGER NOT NULL REFERENCES Account(AccountID)\n" +
+                      ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
@@ -172,9 +172,9 @@ public class DBConnector {
             table = "AccountTransaction";
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
-                        "   `AccountID`     INTEGER NOT NULL REFERENCES Account(AccountID),\n" +
-                        "   `TransactionID` INTEGER NOT NULL REFERENCES Transactions(TransactionID)\n" +
-                        ");";
+                      "   `AccountID`     INTEGER NOT NULL REFERENCES Account(AccountID),\n" +
+                      "   `TransactionID` INTEGER NOT NULL REFERENCES Transactions(TransactionID)\n" +
+                      ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
             }
@@ -212,7 +212,7 @@ public class DBConnector {
     public static Integer loginUser(String username, String password) {        
         if (connection == null)
             if (!connect())
-                return -1;
+                return null;
         
         ResultSet result = null;
         String sql;
@@ -264,6 +264,11 @@ public class DBConnector {
         }
         
         return sessionID;
+    }
+    
+    public static boolean logoutUser(int sessionID) {
+        //TODO logout
+        return false;
     }
     
     /**
@@ -379,7 +384,6 @@ public class DBConnector {
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                result = null;
             }
         }
 
@@ -406,67 +410,80 @@ public class DBConnector {
             stmt.setString(2, accountIBANNumber);
             stmt.executeUpdate();
             stmt.close();
-            
+            return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-
-        return true;
     }
     
+//    /**
+//     * write the data to the database which is needed for remembering a new account
+//     * @param IBANNumber
+//     * @return 
+//     */
+//    public static boolean createNewCustomerAccount(String IBANNumber) {
+//        if (connection == null) {
+//            if (!connect()) {
+//                return false;
+//            }
+//        }
+//
+//        String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?, 0, 0);";
+//        
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setString(1, IBANNumber);
+//            stmt.executeUpdate();
+//            stmt.close();
+//            
+//        } catch (SQLException e) {
+//            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+//            return false;
+//        }
+//
+//        return true;
+//    }
+    
     /**
-     * write the data to the database which is needed for remembering a new account
-     * @param IBANNumber
-     * @return 
+     * Write the data to the database which is needed for remembering a new account.
+     * @param account The Account to create.
+     * @return If the creation was successful.
      */
-    public static boolean createNewCustomerAccount(String IBANNumber) {
+    public static boolean createNewCustomerAccount(Account account) {
         if (connection == null) {
             if (!connect()) {
                 return false;
             }
         }
-
-        String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?, 0, 0);";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, IBANNumber);
-            stmt.executeUpdate();
-            stmt.close();
+        String sql = "INSERT INTO Accounts (IBAN, Balance, Credit) VALUES (?,?,?)";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, account.getIBAN());
+            stmt.setDouble(2, account.getBalance());
+            stmt.setDouble(3, account.getCredit());
             
+            int accountID = stmt.executeUpdate();
+            
+            account.setAccountID(accountID);
+            account.setIBAN(String.format("%s%010d", BankServer.bankCode, accountID));
+            
+            sql = "UPDATE Accounts SET (IBAN) VALUES (?) WHERE AccountID = ?";
+            connection.prepareStatement(sql);
+            stmt.setString(1, account.getIBAN());
+            stmt.setInt(2, accountID);
+            stmt.executeQuery();
+            return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
-
-        return true;
     }
-    
-    /**
-     * remove all account data for a customer
-     * @param accountNumber
-     * @return 
-     */
-    public static boolean removeCustomerAccount(String accountNumber) {
-        if (connection == null) {
-            if (!connect()) {
-                return false;
-            }
-        }
 
-        String sql = "DELETE FROM Account WHERE IBAN = ?;";
+    public static boolean createNewCustomerAccount(int accountID, int customerID) {
+        //TODO connect customer with account
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, accountNumber);
-            stmt.executeUpdate();
-            stmt.close();
-            
-        } catch (SQLException e) {
-            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
-            return false;
-        }
-
-        return true;
+        return false;
     }
     
     /**
@@ -481,9 +498,9 @@ public class DBConnector {
             }
         }
  
-        String sql = "INSERT INTO Transactions (TransactionID, debitIBAN, creditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO Transactions (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, transaction.getTransactionId());
             stmt.setString(2, transaction.getDebitor());
             stmt.setString(3, transaction.getCreditor());
@@ -515,7 +532,7 @@ public class DBConnector {
  
         String sql = "UPDATE Transactions SET State = ? WHERE TransactionID = ?";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, state.value);
             stmt.setLong(2, transaction.getTransactionId());
             
@@ -542,15 +559,16 @@ public class DBConnector {
         ResultSet result = null;
         Set<Transaction> returnValue = new HashSet<>();
 
-        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message FROM Transactions WHERE State = ?";
+        String sql = "SELECT TransactionID, DebitIBAN, CreditIBAN, Amount, Message FROM Transaction WHERE State = ?";
+        
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, TransactionState.WAITING.value);
             result = stmt.executeQuery();
             
             while (result.next()) {
                 long transactionId = result.getLong("TransactionID");
-                String debitIBAN = result.getString("debitIBAN");
-                String creditIBAN = result.getString("creditIBAN");
+                String debitIBAN = result.getString("DebitIBAN");
+                String creditIBAN = result.getString("CreditIBAN");
                 double amount = result.getDouble("Amount");
                 String message = result.getString("Message");
                 

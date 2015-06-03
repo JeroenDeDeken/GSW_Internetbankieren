@@ -10,23 +10,29 @@
 <message name="registerResponse">
 <part name="parameters" element="tns:registerResponse"></part>
 </message>
-<message name="logout">
-<part name="parameters" element="tns:logout"></part>
-</message>
-<message name="logoutResponse">
-<part name="parameters" element="tns:logoutResponse"></part>
-</message>
 <message name="login">
 <part name="parameters" element="tns:login"></part>
 </message>
 <message name="loginResponse">
 <part name="parameters" element="tns:loginResponse"></part>
 </message>
+<message name="logout">
+<part name="parameters" element="tns:logout"></part>
+</message>
+<message name="logoutResponse">
+<part name="parameters" element="tns:logoutResponse"></part>
+</message>
 <message name="createTransaction">
 <part name="parameters" element="tns:createTransaction"></part>
 </message>
 <message name="createTransactionResponse">
 <part name="parameters" element="tns:createTransactionResponse"></part>
+</message>
+<message name="createAccount">
+<part name="parameters" element="tns:createAccount"></part>
+</message>
+<message name="createAccountResponse">
+<part name="parameters" element="tns:createAccountResponse"></part>
 </message>
 <message name="getAccounts">
 <part name="parameters" element="tns:getAccounts"></part>
@@ -45,17 +51,21 @@
 <input wsam:Action="http://bankserver/ClientService/registerRequest" message="tns:register"></input>
 <output wsam:Action="http://bankserver/ClientService/registerResponse" message="tns:registerResponse"></output>
 </operation>
-<operation name="logout">
-<input wsam:Action="http://bankserver/ClientService/logoutRequest" message="tns:logout"></input>
-<output wsam:Action="http://bankserver/ClientService/logoutResponse" message="tns:logoutResponse"></output>
-</operation>
 <operation name="login">
 <input wsam:Action="http://bankserver/ClientService/loginRequest" message="tns:login"></input>
 <output wsam:Action="http://bankserver/ClientService/loginResponse" message="tns:loginResponse"></output>
 </operation>
+<operation name="logout">
+<input wsam:Action="http://bankserver/ClientService/logoutRequest" message="tns:logout"></input>
+<output wsam:Action="http://bankserver/ClientService/logoutResponse" message="tns:logoutResponse"></output>
+</operation>
 <operation name="createTransaction">
 <input wsam:Action="http://bankserver/ClientService/createTransactionRequest" message="tns:createTransaction"></input>
 <output wsam:Action="http://bankserver/ClientService/createTransactionResponse" message="tns:createTransactionResponse"></output>
+</operation>
+<operation name="createAccount">
+<input wsam:Action="http://bankserver/ClientService/createAccountRequest" message="tns:createAccount"></input>
+<output wsam:Action="http://bankserver/ClientService/createAccountResponse" message="tns:createAccountResponse"></output>
 </operation>
 <operation name="getAccounts">
 <input wsam:Action="http://bankserver/ClientService/getAccountsRequest" message="tns:getAccounts"></input>
@@ -77,15 +87,6 @@
 <soap:body use="literal"></soap:body>
 </output>
 </operation>
-<operation name="logout">
-<soap:operation soapAction=""></soap:operation>
-<input>
-<soap:body use="literal"></soap:body>
-</input>
-<output>
-<soap:body use="literal"></soap:body>
-</output>
-</operation>
 <operation name="login">
 <soap:operation soapAction=""></soap:operation>
 <input>
@@ -95,7 +96,25 @@
 <soap:body use="literal"></soap:body>
 </output>
 </operation>
+<operation name="logout">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
 <operation name="createTransaction">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="createAccount">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal"></soap:body>
