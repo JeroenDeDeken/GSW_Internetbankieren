@@ -69,7 +69,7 @@ public class BankServer {
      * @param amount
      * @return true when successfully added the money
      */
-    public boolean creditAccount(String accountNumber, double amount) {
+    public synchronized boolean creditAccount(String accountNumber, double amount) {
         boolean retVal = false;
         
         if (findAccount(accountNumber)) {
@@ -90,7 +90,7 @@ public class BankServer {
      * @param amount
      * @return true when the money is retracted, false when the balance is to low
      */
-    private boolean debitAccount(String accountNumber, double amount) {
+    private synchronized boolean debitAccount(String accountNumber, double amount) {
         boolean retVal = false;
         
         if (findAccount(accountNumber)) {

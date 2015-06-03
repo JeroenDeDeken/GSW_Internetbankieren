@@ -8,26 +8,11 @@ import java.util.UUID;
  */
 public class Transaction {
     
-    private UUID transactionId;
+    private long transactionId;
     private String debitor;
     private String creditor;
     private double amount;
     private String message;
-    
-    /**
-     * Create a new transaction without identifier
-     * @param debitor
-     * @param creditor
-     * @param amount
-     * @param message 
-     */
-    public Transaction(String debitor, String creditor, double amount, String message) {
-        this.transactionId = UUID.randomUUID();
-        this.debitor = debitor;
-        this.creditor = creditor;
-        this.amount = amount;
-        this.message = message;
-    }
     
     /**
      * Create a new transaction with a specified transactionID
@@ -37,7 +22,7 @@ public class Transaction {
      * @param amount
      * @param message 
      */
-    public Transaction(UUID transactionId, String debitor, String creditor, double amount, String message) {
+    public Transaction(long transactionId, String debitor, String creditor, double amount, String message) {
         this.transactionId = transactionId;
         this.debitor = debitor;
         this.creditor = creditor;
@@ -49,7 +34,7 @@ public class Transaction {
      * Gets the unique identifier of this transaction.
      * @return a UUID representing only this transaction
      */
-    public UUID getTransactionId() {
+    public long getTransactionId() {
         return transactionId;
     }
     
@@ -83,5 +68,21 @@ public class Transaction {
      */
     public String getMessage() {
         return message;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        Transaction otherTransaction = (Transaction) o;
+        boolean retval = false;
+        
+        if (this.transactionId == otherTransaction.transactionId
+                && (this.debitor == null ? otherTransaction.debitor == null : this.debitor.equals(otherTransaction.debitor))
+                && (this.creditor == null ? otherTransaction.creditor == null : this.creditor.equals(otherTransaction.creditor))
+                && this.amount == otherTransaction.amount
+                && (this.message == null ? otherTransaction.message == null : this.message.equals(otherTransaction.message))) {
+            retval = true;
+        }
+        
+        return retval;
     }
 }

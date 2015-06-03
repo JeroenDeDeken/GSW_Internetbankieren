@@ -5,7 +5,7 @@
         <group>
             <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/src/bankserver/Transaction.java</file>
             <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/test/bankServer/DBConnectorTest.java</file>
-            <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/src/bankserver/BankServer.java</file>
+            <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/src/bankserver/TransactionState.java</file>
             <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/src/bankserver/DBConnector.java</file>
         </group>
     </open-files>
