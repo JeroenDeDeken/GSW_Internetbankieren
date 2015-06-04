@@ -5,7 +5,7 @@ package bankserver;
  * @author Roy
  */
 public class Account {
-    private long accountId;
+    private int accountId;
     private String IBAN;
     private double balance;
     private double credit;
@@ -27,7 +27,7 @@ public class Account {
      * @param balance
      * @param credit
      */
-    public Account(Long accountId, String IBAN, double balance, double credit) {
+    public Account(Integer accountId, String IBAN, double balance, double credit) {
         if (accountId == null && IBAN == null) {
             DBConnector.createNewCustomerAccount(this);
         }
@@ -39,7 +39,7 @@ public class Account {
         this.credit = credit;
     }
 
-    public long getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
 

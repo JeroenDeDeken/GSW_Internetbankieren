@@ -6,12 +6,8 @@
 package bankserver;
 
 import java.util.List;
-import javafx.util.Pair;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.ws.Holder;
 
 /**
@@ -115,13 +111,13 @@ public class ClientService {
     }
     
     /**
-     * 
-     * @param sessionID
-     * @param fromAccount
-     * @param toAccount
-     * @param amount
-     * @param description
-     * @return 
+     * Creates a new @{link Transaction} transaction with the given parameters.
+     * @param sessionID The session ID where the user will be determined from.
+     * @param fromAccount The IBAN of the credit account.
+     * @param toAccount The IBAN of the debit account.
+     * @param amount The amount to transact.
+     * @param description The description of the transaction.
+     * @return The status of the process.
      */
     public newTransactionStatus createTransaction(int sessionID, String fromAccount, String toAccount, double amount, String description) {
         
@@ -138,26 +134,27 @@ public class ClientService {
         return newTransactionStatus.success;
     }
     
-    //TODO return result
+    /**
+     * Creates a account for the customer bundled with the session.
+     * @param sessionID The sessionID to create a account for.
+     * @return The @{link Account account} created.
+     */
     public Account createAccount(int sessionID) {
-        //TODO
-        //Determine the credit
-        //Generate a new IBAN (IBAN code length 3) + (AccountID length 10))
+        //TODO Determine the credit
         
         Account account = new Account(0, 0);
-        
-        //check input
-        //create transaction
-        //save to database
-        
-        DBConnector.createNewCustomerAccount(account);
-        
+        DBConnector.connectCustomerAccount(account.getAccountId(), DBConnector.getUserIDForSessionID(sessionID));
         return account;
     }
     
+    /**
+     * Returns the @{link Account accounts} owned by the customer.
+     * @param sessionID The sessionID linked for the customerID.
+     * @return 
+     */
     public List<Account> getAccounts(int sessionID) {
-        //TODO check session, get user, return array
-        return null;
+        Integer id = DBConnector.getUserIDForSessionID(sessionID);
+        return (id != null ? DBConnector.getAccountsForCustomerID(id) : null);
     }
     
     public List<Transaction> getTransactionsForAccount(int sessionID, int accountID) {
