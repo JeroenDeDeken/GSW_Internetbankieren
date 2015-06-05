@@ -34,4 +34,12 @@ public enum TransactionState {
     private TransactionState(int value) {
         this.value = value;
     }
+    
+    public static TransactionState fromValue(int value) throws IllegalArgumentException {
+         try{
+              return TransactionState.values()[value];
+         }catch( ArrayIndexOutOfBoundsException e ) {
+              throw new IllegalArgumentException("Unknown enum value :"+ value);
+         }
+     }
 }

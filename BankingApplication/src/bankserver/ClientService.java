@@ -153,12 +153,19 @@ public class ClientService {
      * @return 
      */
     public List<Account> getAccounts(int sessionID) {
-        Integer id = DBConnector.getUserIDForSessionID(sessionID);
-        return (id != null ? DBConnector.getAccountsForCustomerID(id) : null);
+        Integer userID = DBConnector.getUserIDForSessionID(sessionID);
+        return (userID != null ? DBConnector.getAccountsForCustomerID(userID) : null);
     }
     
+    /**
+     * Returns the @{link Transaction transaction} made with the account.
+     * @param sessionID The sessionID linked for the customerID.
+     * @param accountID The accountID linked for the transactions.
+     * @return null when the session couldn't be found or when the transactions couldn't be retrieved.
+     */
     public List<Transaction> getTransactionsForAccount(int sessionID, int accountID) {
-        //TODO check session, get user, return array
-        return null;
+        Integer userID = DBConnector.getUserIDForSessionID(sessionID);
+        //TODO check if the user is the owner of the account
+        return (userID != null ? DBConnector.getTransactionsForAccountID(accountID) : null);
     }
 }
