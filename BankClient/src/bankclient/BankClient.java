@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,6 +33,8 @@ public class BankClient extends Application {
     public final static String ACCOUNT_FXML = "AccountDocument.fxml";
     public final static String NEW_TRANSACTION_FXML = "NewTransactionDocument.fxml";
     
+    private final String PREF_BANK_URL = "pref_bank_url";
+    
     private String lastScene = "";
     private Stage stage;
     private ClientService service;
@@ -41,7 +44,7 @@ public class BankClient extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        TextInputDialog dialog = new TextInputDialog("localhost");
+        TextInputDialog dialog = new TextInputDialog(loadBankUrl());
         dialog.setTitle("Bank client application");
         dialog.setHeaderText("Please enter your banking address/url, if you are not sure what you need to fill in, please contact your bank.");
         dialog.setContentText("Banking url:");
@@ -58,6 +61,8 @@ public class BankClient extends Application {
 
                 service = new ClientServiceService().getClientServicePort();
                 instance = this;
+                
+                saveBankUrl(url);
 
                 this.stage = stage;
                 showFXMLDocument(LOGIN_FXML);
@@ -82,6 +87,30 @@ public class BankClient extends Application {
 
             alert.showAndWait();
         }
+    }
+    
+    /**
+     * Gets the {@link Preferences} for the application.
+     * @return The {@link Preferences} object.
+     */
+    private Preferences getPreferences() {
+        return Preferences.userNodeForPackage(BankClient.class);
+    }
+    
+    /**
+     * Saves the given string to the preferences.
+     * @param bankUrl The string to save and load next time.
+     */
+    private void saveBankUrl(String bankUrl) {
+        getPreferences().put(PREF_BANK_URL, bankUrl);
+    }
+    
+    /**
+     * Loads the last successful bankurl from the preferences.
+     * @return 'localhost' by default.
+     */
+    private String loadBankUrl() {
+        return getPreferences().get(PREF_BANK_URL, "localhost");
     }
 
     /**

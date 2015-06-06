@@ -61,7 +61,7 @@ public class DBConnector {
      */
     public static void removeDatabase() {
         disconnect();
-        
+        //TODO cleanup, do not use a static path
         Path path = FileSystems.getDefault().getPath("D:\\Git\\GSW_Internetbankieren\\BankingApplication", "BankServer.db");
         System.out.println("Delete file " + path.toString());
         try {
@@ -266,8 +266,23 @@ public class DBConnector {
         return sessionID;
     }
     
+    /**
+     * Logs out the user logged in with the sessionID.
+     * @param sessionID The ID of the session the user is logged in with.
+     * @return If the deletion was a success.
+     */
     public static boolean logoutUser(int sessionID) {
-        //TODO logout
+        String sql = "DELETE FROM Session WHERE SessionID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, sessionID);
+            
+            stmt.executeQuery(sql);
+            
+            return true;
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
         return false;
     }
     
@@ -408,8 +423,7 @@ public class DBConnector {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, balance);
             stmt.setString(2, accountIBANNumber);
-            stmt.executeUpdate();
-            stmt.close();
+            stmt.execute();
             return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -456,7 +470,7 @@ public class DBConnector {
             }
         }
         
-        String sql = "INSERT INTO Accounts (IBAN, Balance, Credit) VALUES (?,?,?)";
+        String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?,?,?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, account.getIBAN());
@@ -468,11 +482,11 @@ public class DBConnector {
             account.setAccountID(accountID);
             account.setIBAN(String.format("%s%010d", BankServer.bankCode, accountID));
             
-            sql = "UPDATE Accounts SET (IBAN) VALUES (?) WHERE AccountID = ?";
+            sql = "UPDATE Account SET (IBAN) VALUES (?) WHERE AccountID = ?";
             connection.prepareStatement(sql);
             stmt.setString(1, account.getIBAN());
             stmt.setInt(2, accountID);
-            stmt.executeQuery();
+            stmt.execute();
             return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -480,14 +494,73 @@ public class DBConnector {
         }
     }
 
-    public static boolean createNewCustomerAccount(int accountID, int customerID) {
-        //TODO connect customer with account
+    
+    public static boolean connectCustomerAccount(int accountID, int customerID) {
+        String sql = "INSERT INTO CustomerAccount (CustomerID, AccountID) VALUES (?, ?);";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, customerID);
+            stmt.setInt(2, accountID);
+            stmt.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
         
         return false;
     }
+
+    /**
+     * Get the customer ID for the given session ID.
+     * @param sessionID
+     * @return null when the session is not found.
+     */
+    public static Integer getUserIDForSessionID(int sessionID) {
+        Integer customerID = null;
+        ResultSet result;
+        String sql = "SELECT CustomerID FROM Session WHERE SessionID = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, sessionID);
+            result = stmt.executeQuery();
+            
+            if (result.next()) {
+                customerID = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        return customerID;
+    }
     
     /**
-     * write a given transaction to the database for later processing
+     * Returns a @{link List} of @{link Account accounts} of the given customer.
+     * @param customerID The ID of the customer.
+     * @return null on error.
+     */
+    public static List<Account> getAccountsForCustomerID(int customerID) {
+        List<Account> accounts = null;
+        ResultSet result;
+        String sql = "SELECT AccountID, IBAN, Balance, Credit FROM Account WHERE AccountID = (SELECT AccountID FROM CustomerAccount WHERE CustomerID = ?)";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, customerID);
+            result = stmt.executeQuery();
+            
+            accounts = new ArrayList<>();
+            while (result.next()) {
+                accounts.add(new Account(result.getInt(1), result.getString(2), result.getDouble(3), result.getDouble(4)));
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        return accounts;
+    }
+    
+    /**
+     * Write a given transaction to the database for later processing.
      * @param transaction
      * @return true when successful
      */
@@ -498,7 +571,7 @@ public class DBConnector {
             }
         }
  
-        String sql = "INSERT INTO Transactions (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO Transaction (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, transaction.getTransactionId());
@@ -518,7 +591,7 @@ public class DBConnector {
     }
     
     /**
-     * Change the transaction state of a given transaction
+     * Change the transaction state of a given transaction.
      * @param transaction
      * @param state
      * @return true when successful
@@ -530,7 +603,7 @@ public class DBConnector {
             }
         }
  
-        String sql = "UPDATE Transactions SET State = ? WHERE TransactionID = ?";
+        String sql = "UPDATE Transaction SET State = ? WHERE TransactionID = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, state.value);
@@ -546,7 +619,7 @@ public class DBConnector {
     }
     
     /**
-     * get a list with all the transaction which still have the waiting state
+     * Get a list with all the transaction which still have the waiting state.
      * @return null when failed
      */
     public static Set<Transaction> getUnprocessedTransactions() {
@@ -572,7 +645,7 @@ public class DBConnector {
                 double amount = result.getDouble("Amount");
                 String message = result.getString("Message");
                 
-                Transaction thisTransaction = new Transaction(transactionId, debitIBAN, creditIBAN, amount, message);
+                Transaction thisTransaction = new Transaction(transactionId, debitIBAN, creditIBAN, amount, message, TransactionState.WAITING);
                 returnValue.add(thisTransaction);
             }
         } catch (SQLException e) {
@@ -589,6 +662,32 @@ public class DBConnector {
         }
 
         return returnValue;
+    }
+    
+    /**
+     * Returns a @{link List} of @{link Transaction transactions} of the given @{Link Account accountID}.
+     * @param accountID The ID of the account.
+     * @return null on error.
+     */
+    public static List<Transaction> getTransactionsForAccountID(int accountID) {
+        List<Transaction> transactions = null;
+        ResultSet result;
+        
+        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transaction WHERE TransactionID = (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, accountID);
+            result = stmt.executeQuery();
+            
+            transactions = new ArrayList<>();
+            while (result.next()) {
+                transactions.add(new Transaction(result.getLong(1), result.getString(2), result.getString(3), result.getDouble(4), result.getString(5), TransactionState.fromValue(result.getInt(6))));
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        return transactions;
     }
     
     /**
