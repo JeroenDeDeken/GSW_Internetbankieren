@@ -30,7 +30,7 @@ public class DBConnector {
      * Connect to the database.
      * @return If the connection was successful.
      */
-    public static boolean connect() {
+    protected static boolean connect() {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:CentralServer.db");
@@ -45,7 +45,7 @@ public class DBConnector {
      * Disconnect from the database.
      * @return If the disconnecting was successful.
      */
-    public static boolean disconnect() {
+    protected static boolean disconnect() {
         try {
             if (connection != null) connection.close();
             return true;
@@ -58,7 +58,7 @@ public class DBConnector {
     /**
      * When testing we delete the database after the tests to make a clean testrun every time
      */
-    public static void removeDatabase() {
+    protected static void removeDatabase() {
         disconnect();
         
         Path path = FileSystems.getDefault().getPath("D:\\Git\\GSW_Internetbankieren\\CentraleBank", "CentralServer.db");
@@ -74,7 +74,7 @@ public class DBConnector {
     /**
      * Create the database when it is not existing
      */
-    public static void createDatabase() {
+    protected static void createDatabase() {
         if (connection == null) connect();
         
         try (Statement stmt = connection.createStatement()) {
@@ -119,7 +119,7 @@ public class DBConnector {
      * @param transaction
      * @return `true when successful
      */
-    public static boolean insertTransaction(Transaction transaction) {
+    protected static boolean insertTransaction(Transaction transaction) {
         if (connection == null) {
             if (!connect()) {
                 return false;
@@ -134,7 +134,7 @@ public class DBConnector {
             stmt.setString(3, transaction.getCreditor());
             stmt.setDouble(4, transaction.getAmount());
             stmt.setString(5, transaction.getMessage());
-            stmt.setInt(6, TransactionState.PROCESSING.value);
+            stmt.setInt(6, TransactionState.INITIAL.value);
             
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -151,7 +151,7 @@ public class DBConnector {
      * @param state 
      * @return true when successful
      */
-    public static boolean changeTransactionState(Transaction transaction, TransactionState state) {
+    protected static boolean changeTransactionState(Transaction transaction, TransactionState state) {
         if (connection == null) {
             if (!connect()) {
                 return false;
@@ -177,7 +177,7 @@ public class DBConnector {
      * get a list with all the transaction which still have the processing state
      * @return null when failed
      */
-    public static Set<Transaction> getUnprocessedTransactions() {
+    protected static Set<Transaction> getUnprocessedTransactions() {
         if (connection == null) {
             if (!connect()) {
                 return null;
@@ -189,7 +189,7 @@ public class DBConnector {
 
         String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message FROM Transactions WHERE State = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, TransactionState.PROCESSING.value);
+            stmt.setInt(1, TransactionState.INITIAL.value);
             result = stmt.executeQuery();
             
             while (result.next()) {
