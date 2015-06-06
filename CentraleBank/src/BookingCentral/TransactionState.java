@@ -8,7 +8,7 @@ public enum TransactionState {
     /**
      * the transaction is not yet processed
      */
-    PROCESSING(0),
+    INITIAL(0),
     
     /**
      * the transaction is processed successfully
@@ -18,7 +18,12 @@ public enum TransactionState {
     /**
      * processing the transaction failed
      */
-    FAILED(2);
+    FAILED(2),
+    
+    /**
+     * The transaction is send to the bank but not yet acknowledged
+     */
+    SENDTOBANK(3);
     
     final int value;
     private TransactionState(int value) {

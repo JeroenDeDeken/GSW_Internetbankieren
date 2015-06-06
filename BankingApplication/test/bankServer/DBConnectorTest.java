@@ -75,7 +75,6 @@ public class DBConnectorTest {
     public void testCustomerAccount() {
         //TODO fix the tests
         //createNewCustomerAccount & removeCustomerAccount werken niet meer omdat er gewerkt wordt met gebruikers en rekeningen, niet iban-rekeningen
-        
 //        System.out.println("createNewCustomerAccount");
 //        String IBANNumber = "NL00RABO0123456789";
 //        boolean expCreateResult = true;
