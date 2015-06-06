@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -17,6 +18,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import soapclient.Account;
 
 /**
@@ -29,12 +31,15 @@ public class AccountsDocumentController implements Initializable {
     @FXML private Label lblName;
     @FXML private ListView lbAccounts;
     
+    private List<Account> mAccounts;
+    
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         getAccounts();
+        handleAccountsClick();
     }
     
     @FXML
@@ -52,13 +57,18 @@ public class AccountsDocumentController implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            Account account = BankClient.getInstance().getService().createAccount(BankClient.getSessionID());
-            if (account == null) {
-                //TODO show error result
-                return;
+            try {
+                Account account = BankClient.getInstance().getService().createAccount(BankClient.getSessionID());
+                if (account == null) {
+                    //TODO show error result
+                    return;
+                }
+
+                //TODO add to list
             }
-            
-            //TODO add to list
+            catch (Exception e) {
+                //TODO show error message
+            }
         }
     }
     
@@ -73,14 +83,29 @@ public class AccountsDocumentController implements Initializable {
     }
     
     private void getAccounts() {
-        List<Account> accounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
-        if (accounts == null) {
-            //TODO show error result
-            return;
+        try {
+            mAccounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
+            if (mAccounts != null) {
+                lbAccounts.getItems().setAll(mAccounts);
+            }
+            else {
+                //TODO show error result
+                return;
+            }
         }
-
-        for (Account account : accounts) {
-            //TODO add to list
+        catch (Exception ex) {
+            
         }
+    }
+    
+    private void handleAccountsClick() {
+        lbAccounts.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+                Account account = (Account)lbAccounts.getSelectionModel().getSelectedItem();
+                BankClient.setSelectedAccountID(account.getAccountID());
+                BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
+            }
+        });
     }
 }

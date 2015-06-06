@@ -106,7 +106,7 @@ public class ClientService {
      * Logout a user with the provided session ID.
      * @param sessionID The sessionID of the session to close.
      */
-    public void logout(int sessionID) {
+    public void logout(@WebParam(name = "sessionID")int sessionID) {
         DBConnector.logoutUser(sessionID);
     }
     
@@ -119,7 +119,7 @@ public class ClientService {
      * @param description The description of the transaction.
      * @return The status of the process.
      */
-    public newTransactionStatus createTransaction(int sessionID, String fromAccount, String toAccount, double amount, String description) {
+    public newTransactionStatus createTransaction(@WebParam(name = "sessionID")int sessionID, @WebParam(name = "debitIBAN") String fromAccount, @WebParam(name = "creditIBAN") String toAccount, @WebParam(name = "amount") double amount, @WebParam(name = "description") String description) {
         
         if (amount <= 0) return newTransactionStatus.invalidAmount;
         if (!BankServer.getInstance().isValidIBAN(fromAccount) || !BankServer.getInstance().isValidIBAN(toAccount)) return newTransactionStatus.invalidIBAN;
@@ -139,11 +139,11 @@ public class ClientService {
      * @param sessionID The sessionID to create a account for.
      * @return The @{link Account account} created.
      */
-    public Account createAccount(int sessionID) {
+    public Account createAccount(@WebParam(name = "sessionID") int sessionID) {
         //TODO Determine the credit
         
         Account account = new Account(0, 0);
-        DBConnector.connectCustomerAccount(account.getAccountId(), DBConnector.getUserIDForSessionID(sessionID));
+        DBConnector.connectCustomerAccount(account.getAccountID(), DBConnector.getUserIDForSessionID(sessionID));
         return account;
     }
     
@@ -152,7 +152,7 @@ public class ClientService {
      * @param sessionID The sessionID linked for the customerID.
      * @return 
      */
-    public List<Account> getAccounts(int sessionID) {
+    public List<Account> getAccounts(@WebParam(name = "sessionID") int sessionID) {
         Integer userID = DBConnector.getUserIDForSessionID(sessionID);
         return (userID != null ? DBConnector.getAccountsForCustomerID(userID) : null);
     }
@@ -163,7 +163,7 @@ public class ClientService {
      * @param accountID The accountID linked for the transactions.
      * @return null when the session couldn't be found or when the transactions couldn't be retrieved.
      */
-    public List<Transaction> getTransactionsForAccount(int sessionID, int accountID) {
+    public List<Transaction> getTransactionsForAccount(@WebParam(name = "sessionID") int sessionID, @WebParam(name = "accountID") int accountID) {
         Integer userID = DBConnector.getUserIDForSessionID(sessionID);
         //TODO check if the user is the owner of the account
         return (userID != null ? DBConnector.getTransactionsForAccountID(accountID) : null);

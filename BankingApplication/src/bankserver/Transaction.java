@@ -2,11 +2,16 @@ package bankserver;
 
 import java.util.Objects;
 import java.util.UUID;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Jeroen
  */
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@XmlType(name = "Transaction")
 public class Transaction {
     
     private long transactionId;
@@ -15,6 +20,10 @@ public class Transaction {
     private double amount;
     private String message;
     private TransactionState state;
+    
+    private Transaction() {
+        
+    }
     
     /**
      * Create a new transaction without identifier
@@ -99,7 +108,7 @@ public class Transaction {
     
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Transaction)) return false;
+        if (getClass() != o.getClass()) return false;
         
         Transaction otherTransaction = (Transaction) o;
         boolean retval = false;
@@ -125,5 +134,10 @@ public class Transaction {
         hash = 59 * hash + (int) (Double.doubleToLongBits(this.amount) ^ (Double.doubleToLongBits(this.amount) >>> 32));
         hash = 59 * hash + Objects.hashCode(this.message);
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Debitor: %s, Creditor: %s, Amount: %f, Description: %s", debitor, creditor, amount, message);
     }
 }

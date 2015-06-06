@@ -40,7 +40,7 @@ public class BankClient extends Application {
     private ClientService service;
     private static BankClient instance;
     
-    private Integer sessionID = -1;
+    private Integer sessionID = null, selectedAccountID = null;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -134,6 +134,14 @@ public class BankClient extends Application {
 
     public static void setSessionID(Integer sessionID) {
         instance.sessionID = sessionID;
+    }
+
+    public static Integer getSelectedAccountID() {
+        return instance.selectedAccountID;
+    }
+
+    public static void setSelectedAccountID(Integer accountID) {
+        instance.selectedAccountID = accountID;
     }
 
     /**

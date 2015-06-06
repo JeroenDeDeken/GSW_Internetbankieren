@@ -1,9 +1,12 @@
 package bankserver;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Jeroen
  */
+@XmlRootElement
 public enum TransactionState {
     /**
      * the initial state of a new transaction
