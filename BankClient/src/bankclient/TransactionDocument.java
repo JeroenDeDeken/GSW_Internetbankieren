@@ -14,7 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javax.xml.soap.SOAPException;
 import soapclient.Transaction;
 
 /**
