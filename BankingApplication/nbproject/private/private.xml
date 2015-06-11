@@ -2,14 +2,8 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-<<<<<<< HEAD
-=======
         <group>
-            <file>file:/Users/Roy/Documents/NetBeans/GSW_Internetbankieren/BankingApplication/src/bankserver/BankServer.java</file>
-            <file>file:/Users/Roy/Documents/NetBeans/GSW_Internetbankieren/BankingApplication/src/bankserver/DBConnector.java</file>
-            <file>file:/Users/Roy/Documents/NetBeans/GSW_Internetbankieren/BankingApplication/src/bankserver/Account.java</file>
-            <file>file:/Users/Roy/Documents/NetBeans/GSW_Internetbankieren/BankingApplication/src/bankserver/ClientService.java</file>
+            <file>file:/D:/Git/GSW_Internetbankieren/BankingApplication/src/bankserver/BankServer.java</file>
         </group>
->>>>>>> origin/master
     </open-files>
 </project-private>

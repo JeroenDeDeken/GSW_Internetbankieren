@@ -71,6 +71,17 @@ public class Transaction {
     }
     
     @Override
+    public String toString() {
+        String retval = new String();
+        retval += "|<T>" + String.valueOf(transactionId);
+        retval += "|<C>" + creditor;
+        retval += "|<D>" + debitor;
+        retval += "|<A>" + String.valueOf(amount);
+        retval += "|<M>" + message;
+        return retval;
+    }
+    
+    @Override
     public boolean equals(Object o) {
         Transaction otherTransaction = (Transaction) o;
         boolean retval = false;
