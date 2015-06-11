@@ -108,7 +108,7 @@ public class DBConnector {
             /**
              * Create table Transactions
              */
-            table = "Transaction"; //Transaction is a reservered keyword
+            table = "Transactions"; //Transaction is a reservered keyword
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
                         "   `DbID`          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
@@ -132,7 +132,7 @@ public class DBConnector {
                       "   `CustomerID`  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n" +
                       "   `Username`    TEXT NOT NULL UNIQUE,\n" +
                       "   `Password`    TEXT NOT NULL,\n" +
-                      "   `Name`        TEXT NOT NULL,\n" +
+//                      "   `Name`        TEXT NOT NULL,\n" +
                       "   `Residence`   TEXT\n" +
                       ");";
                 stmt.executeUpdate(sql);
@@ -224,7 +224,7 @@ public class DBConnector {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, password);
-            result = stmt.executeQuery(sql);
+            result = stmt.executeQuery();
             
             if (result.next()) {
                 customerID = result.getInt(1);
@@ -238,12 +238,11 @@ public class DBConnector {
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                result = null;
             }
         }
         
         if (result == null) return null; //Error happened
-        if (customerID != null) return -1; //User not found
+        if (customerID == null) return -1; //User not found
         result = null;
         
         //Create the user session
@@ -276,7 +275,7 @@ public class DBConnector {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, sessionID);
             
-            stmt.executeQuery(sql);
+            stmt.executeQuery();
             
             return true;
         } catch (SQLException e) {
@@ -302,7 +301,7 @@ public class DBConnector {
         String sql = "SELECT COUNT(*) FROM Customer WHERE Username = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, username);
-            result = stmt.executeQuery(sql);
+            result = stmt.executeQuery();
             
             if (result.next()) {
                 exists = (result.getInt(1) > 0);
@@ -316,7 +315,6 @@ public class DBConnector {
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                result = null;
             }
         }
         
@@ -571,7 +569,7 @@ public class DBConnector {
             }
         }
  
-        String sql = "INSERT INTO Transaction (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO Transactions (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, transaction.getTransactionId());
@@ -603,7 +601,7 @@ public class DBConnector {
             }
         }
  
-        String sql = "UPDATE Transaction SET State = ? WHERE TransactionID = ?";
+        String sql = "UPDATE Transactions SET State = ? WHERE TransactionID = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, state.value);
@@ -632,7 +630,7 @@ public class DBConnector {
         ResultSet result = null;
         Set<Transaction> returnValue = new HashSet<>();
 
-        String sql = "SELECT TransactionID, DebitIBAN, CreditIBAN, Amount, Message FROM Transaction WHERE State = ?";
+        String sql = "SELECT TransactionID, DebitIBAN, CreditIBAN, Amount, Message FROM Transactions WHERE State = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, TransactionState.WAITING.value);
@@ -673,7 +671,7 @@ public class DBConnector {
         List<Transaction> transactions = null;
         ResultSet result;
         
-        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transaction WHERE TransactionID = (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
+        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transactions WHERE TransactionID = (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountID);
