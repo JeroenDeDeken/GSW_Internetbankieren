@@ -6,6 +6,7 @@
 package bankclient;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -61,14 +62,18 @@ public class AccountsDocumentController implements Initializable {
             try {
                 Account account = BankClient.getInstance().getService().createAccount(BankClient.getSessionID());
                 if (account == null) {
-                    //TODO show error result
+                     showError("Server Error", "Something went wrong on the server while creating the account.", "Please try again in a few minutes");
                     return;
                 }
 
-                //TODO add to list
+                if (mAccounts == null) {
+                    mAccounts = new ArrayList<>();
+                    lbAccounts.getItems().setAll(mAccounts);
+                }
+                mAccounts.add(account);
             }
             catch (Exception e) {
-                //TODO show error message
+                showError("Network error", "Something went wrong trying to creating the account.", "Please check your internet connection.");
             }
         }
     }
@@ -90,12 +95,11 @@ public class AccountsDocumentController implements Initializable {
                 lbAccounts.getItems().setAll(mAccounts);
             }
             else {
-                //TODO show error result
-                return;
+                showError("Server Error", "Something went wrong on the server while retrieving the accounts.", "Please try again in a few minutes");
             }
         }
         catch (Exception ex) {
-            
+            showError("Network error", "Failed to retrieve accounts from the server.", "Please check your internet connection.");
         }
     }
     
@@ -108,5 +112,14 @@ public class AccountsDocumentController implements Initializable {
                 BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
             }
         });
+    }
+    
+    private void showError(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        alert.showAndWait();
     }
 }

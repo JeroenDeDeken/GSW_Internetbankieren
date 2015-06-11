@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.util.Pair;
 import javax.xml.ws.Holder;
 import soapclient.LoginStatus;
 
@@ -48,7 +47,7 @@ public class LoginDocumentController implements Initializable {
                 return;
             }
 
-            final Holder<Integer> sessionID = new Holder<Integer>();;
+            final Holder<Integer> sessionID = new Holder<>();
 
             LoginStatus status;
             try {
@@ -68,8 +67,6 @@ public class LoginDocumentController implements Initializable {
 
             BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
         } catch (Exception ex) {
-            setResult("");
-            return;
         } finally {
             setResult("");
         }
