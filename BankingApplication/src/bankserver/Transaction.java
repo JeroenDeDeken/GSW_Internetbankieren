@@ -4,13 +4,16 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Jeroen
  */
-@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Transaction")
 public class Transaction {
     
@@ -62,6 +65,7 @@ public class Transaction {
      * Gets the unique identifier of this transaction.
      * @return a UUID representing only this transaction
      */
+    @XmlAttribute
     public long getTransactionId() {
         return transactionId;
     }
@@ -70,6 +74,7 @@ public class Transaction {
      * Gets the account where the money should be withdrawn from
      * @return a string representing the IBAN nr
      */
+    @XmlAttribute
     public String getDebitor() {
         return debitor;
     }
@@ -78,6 +83,7 @@ public class Transaction {
      * Gets the account where the money should be added to
      * @return a string representing the IBAN nr
      */
+    @XmlAttribute
     public String getCreditor() {
         return creditor;
     }
@@ -86,6 +92,7 @@ public class Transaction {
      * Gets the amount of money handled by this transaction
      * @return a double representing the amount of money which is transacted
      */
+    @XmlAttribute
     public double getAmount() {
         return amount;
     }
@@ -94,6 +101,7 @@ public class Transaction {
      * Gets the message supplied to this transaction
      * @return a string containing the message
      */
+    @XmlAttribute
     public String getMessage() {
         return message;
     }
@@ -102,6 +110,7 @@ public class Transaction {
      * Gets the current transaction state
      * @return a @{TransactionState} enum value
      */
+    @XmlAttribute
     public TransactionState getState() {
         return state;
     }

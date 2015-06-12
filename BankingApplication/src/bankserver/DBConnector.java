@@ -471,7 +471,7 @@ public class DBConnector {
         String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?,?,?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, account.getIBAN());
+            stmt.setString(1, "generating...");
             stmt.setDouble(2, account.getBalance());
             stmt.setDouble(3, account.getCredit());
             
@@ -480,7 +480,7 @@ public class DBConnector {
             account.setAccountID(accountID);
             account.setIBAN(String.format("%s%010d", BankServer.bankCode, accountID));
             
-            sql = "UPDATE Account SET (IBAN) VALUES (?) WHERE AccountID = ?";
+            sql = "UPDATE Account SET IBAN = ? WHERE AccountID = ?";
             connection.prepareStatement(sql);
             stmt.setString(1, account.getIBAN());
             stmt.setInt(2, accountID);

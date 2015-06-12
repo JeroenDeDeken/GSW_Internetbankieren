@@ -42,6 +42,11 @@ public class AccountDocumentController implements Initializable {
     }
     
     @FXML
+    private void handleBackAction(ActionEvent event) {
+        BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
+    }
+    
+    @FXML
     private void handleLogoutAction(ActionEvent event) {
         BankClient.getInstance().showFXMLDocument(BankClient.LOGIN_FXML);
     }

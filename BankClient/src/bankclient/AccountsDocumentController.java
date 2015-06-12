@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import soapclient.Account;
+import subclasses.AccountExtended;
 
 /**
  * FXML Controller class
@@ -32,7 +33,7 @@ public class AccountsDocumentController implements Initializable {
     @FXML private Label lblName;
     @FXML private ListView lbAccounts;
     
-    private List<Account> mAccounts;
+    private List<AccountExtended> mAccounts;
     
     /**
      * Initializes the controller class.
@@ -68,9 +69,9 @@ public class AccountsDocumentController implements Initializable {
 
                 if (mAccounts == null) {
                     mAccounts = new ArrayList<>();
-                    lbAccounts.getItems().setAll(mAccounts);
                 }
-                mAccounts.add(account);
+                mAccounts.add(new AccountExtended(account));
+                lbAccounts.getItems().setAll(mAccounts);
             }
             catch (Exception e) {
                 showError("Network error", "Something went wrong trying to creating the account.", "Please check your internet connection.");
@@ -90,8 +91,11 @@ public class AccountsDocumentController implements Initializable {
     
     private void getAccounts() {
         try {
-            mAccounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
-            if (mAccounts != null) {
+            List<Account> accounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
+            if (accounts != null) {
+                for (Account account : accounts) {
+                    mAccounts.add(new AccountExtended(account));
+                }
                 lbAccounts.getItems().setAll(mAccounts);
             }
             else {
