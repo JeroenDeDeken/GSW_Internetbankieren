@@ -6,6 +6,7 @@
 package bankclient;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -20,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import soapclient.Account;
+import subclasses.AccountExtended;
 
 /**
  * FXML Controller class
@@ -31,13 +33,14 @@ public class AccountsDocumentController implements Initializable {
     @FXML private Label lblName;
     @FXML private ListView lbAccounts;
     
-    private List<Account> mAccounts;
+    private List<AccountExtended> mAccounts;
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //TODO set account name in lblName
         getAccounts();
         handleAccountsClick();
     }
@@ -60,14 +63,18 @@ public class AccountsDocumentController implements Initializable {
             try {
                 Account account = BankClient.getInstance().getService().createAccount(BankClient.getSessionID());
                 if (account == null) {
-                    //TODO show error result
+                     showError("Server Error", "Something went wrong on the server while creating the account.", "Please try again in a few minutes");
                     return;
                 }
 
-                //TODO add to list
+                if (mAccounts == null) {
+                    mAccounts = new ArrayList<>();
+                }
+                mAccounts.add(new AccountExtended(account));
+                lbAccounts.getItems().setAll(mAccounts);
             }
             catch (Exception e) {
-                //TODO show error message
+                showError("Network error", "Something went wrong trying to creating the account.", "Please check your internet connection.");
             }
         }
     }
@@ -84,17 +91,19 @@ public class AccountsDocumentController implements Initializable {
     
     private void getAccounts() {
         try {
-            mAccounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
-            if (mAccounts != null) {
+            List<Account> accounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
+            if (accounts != null) {
+                for (Account account : accounts) {
+                    mAccounts.add(new AccountExtended(account));
+                }
                 lbAccounts.getItems().setAll(mAccounts);
             }
             else {
-                //TODO show error result
-                return;
+                showError("Server Error", "Something went wrong on the server while retrieving the accounts.", "Please try again in a few minutes");
             }
         }
         catch (Exception ex) {
-            
+            showError("Network error", "Failed to retrieve accounts from the server.", "Please check your internet connection.");
         }
     }
     
@@ -107,5 +116,14 @@ public class AccountsDocumentController implements Initializable {
                 BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
             }
         });
+    }
+    
+    private void showError(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        alert.showAndWait();
     }
 }

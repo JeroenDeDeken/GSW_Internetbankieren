@@ -62,14 +62,17 @@ public class Account {
         return accountID;
     }
 
+    @XmlAttribute
     public String getIBAN() {
         return IBAN;
     }
 
+    @XmlAttribute
     public double getBalance() {
         return balance;
     }
 
+    @XmlAttribute
     public double getCredit() {
         return credit;
     }

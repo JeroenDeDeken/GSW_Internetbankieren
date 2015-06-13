@@ -64,7 +64,7 @@ public class ClientService {
         if (password.length() < 4) return registerStatus.passwordToShort;
         
         try {
-            Integer result = DBConnector.loginUser(username, password);
+            Integer result = DBConnector.registerUser(username, password, residence);
             if (result == null) {
                 return registerStatus.serverError;
             } else if (result < 0) {

@@ -10,17 +10,17 @@
 <message name="registerResponse">
 <part name="parameters" element="tns:registerResponse"></part>
 </message>
-<message name="login">
-<part name="parameters" element="tns:login"></part>
-</message>
-<message name="loginResponse">
-<part name="parameters" element="tns:loginResponse"></part>
-</message>
 <message name="logout">
 <part name="parameters" element="tns:logout"></part>
 </message>
 <message name="logoutResponse">
 <part name="parameters" element="tns:logoutResponse"></part>
+</message>
+<message name="login">
+<part name="parameters" element="tns:login"></part>
+</message>
+<message name="loginResponse">
+<part name="parameters" element="tns:loginResponse"></part>
 </message>
 <message name="createTransaction">
 <part name="parameters" element="tns:createTransaction"></part>
@@ -51,13 +51,13 @@
 <input wsam:Action="http://bankserver/ClientService/registerRequest" message="tns:register"></input>
 <output wsam:Action="http://bankserver/ClientService/registerResponse" message="tns:registerResponse"></output>
 </operation>
-<operation name="login">
-<input wsam:Action="http://bankserver/ClientService/loginRequest" message="tns:login"></input>
-<output wsam:Action="http://bankserver/ClientService/loginResponse" message="tns:loginResponse"></output>
-</operation>
 <operation name="logout">
 <input wsam:Action="http://bankserver/ClientService/logoutRequest" message="tns:logout"></input>
 <output wsam:Action="http://bankserver/ClientService/logoutResponse" message="tns:logoutResponse"></output>
+</operation>
+<operation name="login">
+<input wsam:Action="http://bankserver/ClientService/loginRequest" message="tns:login"></input>
+<output wsam:Action="http://bankserver/ClientService/loginResponse" message="tns:loginResponse"></output>
 </operation>
 <operation name="createTransaction">
 <input wsam:Action="http://bankserver/ClientService/createTransactionRequest" message="tns:createTransaction"></input>
@@ -87,7 +87,7 @@
 <soap:body use="literal"></soap:body>
 </output>
 </operation>
-<operation name="login">
+<operation name="logout">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal"></soap:body>
@@ -96,7 +96,7 @@
 <soap:body use="literal"></soap:body>
 </output>
 </operation>
-<operation name="logout">
+<operation name="login">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal"></soap:body>
