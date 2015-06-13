@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import soapclient.Transaction;
+import subclasses.AccountExtended;
 import subclasses.TransactionExtended;
 
 /**
@@ -34,7 +35,11 @@ public class AccountDocumentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //TODO set the label details
+        AccountExtended account = Globals.getSelectedAccount();
+        lblAccount.setText(account.getIban());
+        lblCreditValue.setText(String.format("%.2f", account.getCredit()));
+        lblBalanceValue.setText(String.format("%.2f", account.getBalance()));
+        
         handleTransactionClick();
         getTransactions();
     }

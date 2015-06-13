@@ -84,6 +84,7 @@ public class RegisterDocumentController implements Initializable {
             default: setResult("A unknown error happened, try again later."); return;
         }
         
+        Globals.setUsername(username);
         BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
     }
     

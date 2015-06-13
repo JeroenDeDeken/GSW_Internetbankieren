@@ -10,10 +10,15 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javax.xml.ws.Holder;
+import soapclient.NewTransactionStatus;
+import soapclient.Transaction;
+import soapclient.TransactionState;
 
 /**
  * FXML Controller class
@@ -32,7 +37,7 @@ public class NewTransactionDocumentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //TODO list the customers accounts in the ChoiceBox & combobox
+        loadAccounts();
     }
     
     @FXML
@@ -40,6 +45,16 @@ public class NewTransactionDocumentController implements Initializable {
         //TODO create new transaction
         //Check input
         //Check result of server
+        
+        
+        try {
+            Holder<Transaction> newTransaction = new Holder<>();
+            NewTransactionStatus status = BankClient.getInstance().getService().createTransaction(Globals.getSessionID(), "debit", "credit", 480567, "description", newTransaction);
+            //TODO handle status etc
+        }
+        catch (Exception ex) {
+            BankClient.showAlert(AlertType.ERROR, "Network error", "Failed to retrieve transactions from the server.", "Please check your internet connection.");
+        }
     }
     
     @FXML
@@ -50,5 +65,9 @@ public class NewTransactionDocumentController implements Initializable {
     @FXML
     private void handleLogoutAction(ActionEvent event) {
         BankClient.getInstance().showFXMLDocument(BankClient.LOGIN_FXML);
+    }
+    
+    private void loadAccounts() {
+        //TODO list the customers accounts in the ChoiceBox & combobox
     }
 }

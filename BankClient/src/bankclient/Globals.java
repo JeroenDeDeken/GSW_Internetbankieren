@@ -15,6 +15,7 @@ import subclasses.TransactionExtended;
  */
 public class Globals {
     private static Integer mSessionID;
+    private static String mUsername;
     
     private static List<AccountExtended> mCustomerAccounts;
     private static AccountExtended mSelectedAccount;
@@ -28,6 +29,14 @@ public class Globals {
 
     public static void setSessionID(Integer sessionID) {
         mSessionID = sessionID;
+    }
+
+    public static String getUsername() {
+        return mUsername;
+    }
+
+    public static void setUsername(String username) {
+        mUsername = username;
     }
 
     public static List<AccountExtended> getCustomerAccounts() {

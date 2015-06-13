@@ -106,7 +106,7 @@ public class ClientService {
      * Logout a user with the provided session ID.
      * @param sessionID The sessionID of the session to close.
      */
-    public void logout(@WebParam(name = "sessionID")int sessionID) {
+    public void logout(@WebParam(name = "sessionID") int sessionID) {
         DBConnector.logoutUser(sessionID);
     }
     
@@ -119,16 +119,18 @@ public class ClientService {
      * @param description The description of the transaction.
      * @return The status of the process.
      */
-    public newTransactionStatus createTransaction(@WebParam(name = "sessionID")int sessionID, @WebParam(name = "debitIBAN") String fromAccount, @WebParam(name = "creditIBAN") String toAccount, @WebParam(name = "amount") double amount, @WebParam(name = "description") String description) {
+    public newTransactionStatus createTransaction(@WebParam(name = "sessionID") int sessionID,
+            @WebParam(name = "debitIBAN") String fromAccount, @WebParam(name = "creditIBAN") String toAccount, @WebParam(name = "amount") double amount,
+            @WebParam(name = "description") String description, @WebParam(name = "outTransaction", mode = WebParam.Mode.OUT) Holder<Transaction> transaction) {
         
         if (amount <= 0) return newTransactionStatus.invalidAmount;
         if (!BankServer.getInstance().isValidIBAN(fromAccount) || !BankServer.getInstance().isValidIBAN(toAccount)) return newTransactionStatus.invalidIBAN;
         
         //TODO check if sessionID user contains fromAccount IBAN
         
-        Transaction transaction = new Transaction(fromAccount, toAccount, amount, description);
+        transaction.value = new Transaction(fromAccount, toAccount, amount, description);
         
-        if (BankServer.getInstance().processTransaction(transaction) != TransactionState.FAILED) {
+        if (BankServer.getInstance().processTransaction(transaction.value) != TransactionState.FAILED) {
             return newTransactionStatus.serverError;
         }
         return newTransactionStatus.success;

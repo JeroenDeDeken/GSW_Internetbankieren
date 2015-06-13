@@ -38,7 +38,7 @@ public class AccountsDocumentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //TODO set account name in lblName
+        lblName.setText(Globals.getUsername());
         getAccounts();
         handleAccountsClick();
     }
