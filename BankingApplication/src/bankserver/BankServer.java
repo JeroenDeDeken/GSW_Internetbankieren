@@ -1,5 +1,10 @@
 package bankserver;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import javax.xml.ws.Endpoint;
 
 /**
@@ -7,7 +12,9 @@ import javax.xml.ws.Endpoint;
  * @author Jeroen
  */
 public class BankServer {
+    
     private static BankServer bs;
+    
     public static BankServer getInstance() {
         if (bs == null) bs = new BankServer();
         return bs;
@@ -17,12 +24,41 @@ public class BankServer {
     public static final String bankCode = "GSW";
     private static final String soapUrl = "http://localhost:8080/BankServer";
 
+    // socket connection
+    private static PrintWriter out;
+    private static BufferedReader in;
+    private static ServerHandler handler;
+    
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         DBConnector.createDatabase();
         launchSoapClientService();
+        
+        try {
+            Socket socket = new Socket("localhost", 4444);
+
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+            
+            String inputLine;
+            handler = new ServerHandler(out);
+            
+            while ((inputLine = in.readLine()) != null) {
+                handler.processInput(inputLine);
+            }
+            
+            out.close();
+            in.close();
+            socket.close();
+        }
+        catch (Exception e) {
+            System.err.println("Could not listen on port: 4444.");
+            System.exit(-1);
+        }
     }
     
     private static void launchSoapClientService() {
@@ -130,6 +166,14 @@ public class BankServer {
         boolean sendSucceeded = false;
         
         // send the transaction to the banking central
+        try {
+            handler.sendTransaction(transaction);
+            sendSucceeded = true;
+        }
+        catch (Exception e) {
+            System.out.println("error sending transaction to server");
+        }
+        
         if (sendSucceeded) {
             DBConnector.changeTransactionState(transaction, TransactionState.SENDTOCENTRAL);
         }

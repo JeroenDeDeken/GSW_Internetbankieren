@@ -73,11 +73,11 @@ public class Transaction {
     @Override
     public String toString() {
         String retval = new String();
-        retval += "|<T>" + String.valueOf(transactionId);
-        retval += "|<C>" + creditor;
-        retval += "|<D>" + debitor;
-        retval += "|<A>" + String.valueOf(amount);
-        retval += "|<M>" + message;
+        retval += "SPLIT<T>" + String.valueOf(transactionId);
+        retval += "SPLIT<C>" + creditor;
+        retval += "SPLIT<D>" + debitor;
+        retval += "SPLIT<A>" + String.valueOf(amount);
+        retval += "SPLIT<M>" + message;
         return retval;
     }
     

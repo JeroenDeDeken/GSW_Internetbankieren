@@ -1,8 +1,6 @@
 package BookingCentral;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -13,13 +11,22 @@ public class TransactionHandler {
     
     private PrintWriter output;
 
+    /**
+     * create a new transactionhandler
+     * @param out output printwriter to send a message to the client
+     */
     public TransactionHandler(PrintWriter out) {
         output = out;
     }
 
+    /**
+     * Process the input from the bank server,
+     * this can be a new transaction or changes on an existing transaction
+     * @param input
+     */
     public void processInput(String input) {
         if (input.startsWith("<S>")) { // existing transaction
-            int index = input.indexOf("|");
+            int index = input.indexOf("SPLIT");
             String state = input.substring(3, index);
             TransactionState transactionState = TransactionState.valueOf(state);
             Transaction transaction = splitTransaction(input.substring(index));
@@ -31,8 +38,13 @@ public class TransactionHandler {
         }
     }
     
+    /**
+     * Split an input string on the delimiters and create a transaction with it.
+     * @param input
+     * @return
+     */
     protected Transaction splitTransaction(String input) {
-        String[] strings = input.split("|");
+        String[] strings = input.split("SPLIT");
         
         long transactionId = 0;
         String debitor = "";
@@ -67,14 +79,13 @@ public class TransactionHandler {
      * @param transaction 
      * @return true when successfully added the transaction
      */
-    public static boolean bookTransaction(Transaction transaction) {
+    private boolean bookTransaction(Transaction transaction) {
         return DBConnector.insertTransaction(transaction);
     }
 
     /**
      * Send a transaction to the client so it can be processed.
      * @param transaction to send
-     * @param out output printwriter to send a message to the client
      * @return true when successfully send to the client
      */
     public boolean sendToBank(Transaction transaction) {

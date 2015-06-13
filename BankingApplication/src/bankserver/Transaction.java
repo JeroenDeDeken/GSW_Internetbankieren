@@ -29,6 +29,22 @@ public class Transaction {
     }
     
     /**
+     * Create a new transaction with a specified transactionID
+     * @param transactionId
+     * @param debitor
+     * @param creditor
+     * @param amount
+     * @param message 
+     */
+    public Transaction(long transactionId, String debitor, String creditor, double amount, String message) {
+        this.transactionId = transactionId;
+        this.debitor = debitor;
+        this.creditor = creditor;
+        this.amount = amount;
+        this.message = message;
+    }
+    
+    /**
      * Create a new transaction without identifier
      * @param debitor
      * @param creditor
@@ -145,8 +161,18 @@ public class Transaction {
         return hash;
     }
 
+//    @Override
+//    public String toString() {
+//        return String.format("Debitor: %s, Creditor: %s, Amount: %f, Description: %s", debitor, creditor, amount, message);
+//    }
     @Override
     public String toString() {
-        return String.format("Debitor: %s, Creditor: %s, Amount: %f, Description: %s", debitor, creditor, amount, message);
+        String retval = new String();
+        retval += "SPLIT<T>" + String.valueOf(transactionId);
+        retval += "SPLIT<C>" + creditor;
+        retval += "SPLIT<D>" + debitor;
+        retval += "SPLIT<A>" + String.valueOf(amount);
+        retval += "SPLIT<M>" + message;
+        return retval;
     }
 }
