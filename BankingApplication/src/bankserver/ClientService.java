@@ -83,7 +83,7 @@ public class ClientService {
      * @param sessionID
      * @return The status code of the login, on success it will contain also the session id on success.
      */
-    public loginStatus login(@WebParam(name = "username") String username, @WebParam(name = "password") String password ,
+    public loginStatus login(@WebParam(name = "username") String username, @WebParam(name = "password") String password,
                                @WebParam(name = "sessionID", mode = WebParam.Mode.OUT) Holder<Integer> sessionID) {
         username = username.trim();
         if (username.isEmpty() || password.isEmpty()) return loginStatus.missingFields;

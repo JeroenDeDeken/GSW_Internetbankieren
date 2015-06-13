@@ -1,6 +1,7 @@
 package bankserver;
 
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -26,7 +27,7 @@ class ServerHandler {
     }
     
     protected Transaction splitTransaction(String input) {
-        String[] strings = input.split("SPLIT");
+        String[] strings = input.split(Pattern.quote(Transaction.SPLIT_STRING));
         
         long transactionId = 0;
         String debitor = "";
@@ -35,19 +36,19 @@ class ServerHandler {
         String message = "";
         
         for (String string : strings) {
-            if (string.startsWith("<T>")) {
+            if (string.startsWith(Transaction.ID_MARK)) {
                 transactionId = Long.valueOf(string.substring(3));
             }
-            if (string.startsWith("<C>")) {
+            if (string.startsWith(Transaction.CREDITOR_MARK)) {
                 creditor = string.substring(3);
             }
-            if (string.startsWith("<D>")) {
+            if (string.startsWith(Transaction.DEBITOR_MARK)) {
                 debitor = string.substring(3);
             }
-            if (string.startsWith("<A>")) {
+            if (string.startsWith(Transaction.AMOUNT_MARK)) {
                 amount = Double.valueOf(string.substring(3));
             }
-            if (string.startsWith("<M>")) {
+            if (string.startsWith(Transaction.MESSAGE_MARK)) {
                 message = string.substring(3);
             }
         }
@@ -86,7 +87,7 @@ class ServerHandler {
     }
 
     private void sendSucces(Transaction transaction) {
-        String message = "<S>" + TransactionState.SUCCEEDED;
+        String message = Transaction.STATE_MARK + TransactionState.SUCCEEDED;
         message += transaction.toString();
         output.println(message);
     }

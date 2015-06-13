@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. --><xs:schema xmlns:tns="http://bankserver/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://bankserver/">
+
+<xs:element name="account" type="tns:Account"></xs:element>
+
+<xs:element name="createAccount" type="tns:createAccount"></xs:element>
+
+<xs:element name="createAccountResponse" type="tns:createAccountResponse"></xs:element>
+
+<xs:element name="createTransaction" type="tns:createTransaction"></xs:element>
+
+<xs:element name="createTransactionResponse" type="tns:createTransactionResponse"></xs:element>
+
+<xs:element name="getAccounts" type="tns:getAccounts"></xs:element>
+
+<xs:element name="getAccountsResponse" type="tns:getAccountsResponse"></xs:element>
+
+<xs:element name="getTransactionsForAccount" type="tns:getTransactionsForAccount"></xs:element>
+
+<xs:element name="getTransactionsForAccountResponse" type="tns:getTransactionsForAccountResponse"></xs:element>
+
+<xs:element name="login" type="tns:login"></xs:element>
+
+<xs:element name="loginResponse" type="tns:loginResponse"></xs:element>
+
+<xs:element name="logout" type="tns:logout"></xs:element>
+
+<xs:element name="logoutResponse" type="tns:logoutResponse"></xs:element>
+
+<xs:element name="register" type="tns:register"></xs:element>
+
+<xs:element name="registerResponse" type="tns:registerResponse"></xs:element>
+
+<xs:element name="transaction" type="tns:Transaction"></xs:element>
+
+<xs:element name="transactionState" type="tns:transactionState"></xs:element>
+
+<xs:complexType name="createAccount">
+<xs:sequence>
+<xs:element name="sessionID" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createAccountResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:Account" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="Account">
+<xs:sequence></xs:sequence>
+<xs:attribute name="accountID" type="xs:int" use="required"></xs:attribute>
+<xs:attribute name="balance" type="xs:double" use="required"></xs:attribute>
+<xs:attribute name="credit" type="xs:double" use="required"></xs:attribute>
+<xs:attribute name="iban" type="xs:string"></xs:attribute>
+</xs:complexType>
+
+<xs:complexType name="getAccounts">
+<xs:sequence>
+<xs:element name="sessionID" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAccountsResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:Account" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="login">
+<xs:sequence>
+<xs:element name="username" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="password" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="loginResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:loginStatus" minOccurs="0"></xs:element>
+<xs:element name="sessionID" type="xs:int" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getTransactionsForAccount">
+<xs:sequence>
+<xs:element name="sessionID" type="xs:int"></xs:element>
+<xs:element name="accountID" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getTransactionsForAccountResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:Transaction" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="Transaction">
+<xs:sequence></xs:sequence>
+<xs:attribute name="amount" type="xs:double" use="required"></xs:attribute>
+<xs:attribute name="creditor" type="xs:string"></xs:attribute>
+<xs:attribute name="debitor" type="xs:string"></xs:attribute>
+<xs:attribute name="message" type="xs:string"></xs:attribute>
+<xs:attribute name="state" type="tns:transactionState"></xs:attribute>
+<xs:attribute name="transactionId" type="xs:long" use="required"></xs:attribute>
+</xs:complexType>
+
+<xs:complexType name="createTransaction">
+<xs:sequence>
+<xs:element name="sessionID" type="xs:int"></xs:element>
+<xs:element name="debitIBAN" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="creditIBAN" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="amount" type="xs:double"></xs:element>
+<xs:element name="description" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createTransactionResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:newTransactionStatus" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="register">
+<xs:sequence>
+<xs:element name="username" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="password" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="residense" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="registerResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:registerStatus" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="logout">
+<xs:sequence>
+<xs:element name="sessionID" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="logoutResponse">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:simpleType name="loginStatus">
+<xs:restriction base="xs:string">
+<xs:enumeration value="success"></xs:enumeration>
+<xs:enumeration value="missingFields"></xs:enumeration>
+<xs:enumeration value="notFound"></xs:enumeration>
+<xs:enumeration value="serverError"></xs:enumeration>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="transactionState">
+<xs:restriction base="xs:string">
+<xs:enumeration value="INITIAL"></xs:enumeration>
+<xs:enumeration value="WAITING"></xs:enumeration>
+<xs:enumeration value="SENDTOCENTRAL"></xs:enumeration>
+<xs:enumeration value="SUCCEEDED"></xs:enumeration>
+<xs:enumeration value="FAILED"></xs:enumeration>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="newTransactionStatus">
+<xs:restriction base="xs:string">
+<xs:enumeration value="success"></xs:enumeration>
+<xs:enumeration value="invalidIBAN"></xs:enumeration>
+<xs:enumeration value="invalidAmount"></xs:enumeration>
+<xs:enumeration value="serverError"></xs:enumeration>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="registerStatus">
+<xs:restriction base="xs:string">
+<xs:enumeration value="success"></xs:enumeration>
+<xs:enumeration value="missingFields"></xs:enumeration>
+<xs:enumeration value="usernameAlreadyExists"></xs:enumeration>
+<xs:enumeration value="usernameToShort"></xs:enumeration>
+<xs:enumeration value="passwordToShort"></xs:enumeration>
+<xs:enumeration value="serverError"></xs:enumeration>
+</xs:restriction>
+</xs:simpleType>
+</xs:schema>

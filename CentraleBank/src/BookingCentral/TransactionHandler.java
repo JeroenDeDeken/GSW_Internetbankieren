@@ -1,6 +1,7 @@
 package BookingCentral;
 
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -25,8 +26,8 @@ public class TransactionHandler {
      * @param input
      */
     public void processInput(String input) {
-        if (input.startsWith("<S>")) { // existing transaction
-            int index = input.indexOf("SPLIT");
+        if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction
+            int index = input.indexOf(Transaction.SPLIT_STRING);
             String state = input.substring(3, index);
             TransactionState transactionState = TransactionState.valueOf(state);
             Transaction transaction = splitTransaction(input.substring(index));
@@ -44,7 +45,7 @@ public class TransactionHandler {
      * @return
      */
     protected Transaction splitTransaction(String input) {
-        String[] strings = input.split("SPLIT");
+        String[] strings = input.split(Pattern.quote(Transaction.SPLIT_STRING));
         
         long transactionId = 0;
         String debitor = "";
@@ -53,19 +54,19 @@ public class TransactionHandler {
         String message = "";
         
         for (String string : strings) {
-            if (string.startsWith("<T>")) {
+            if (string.startsWith(Transaction.ID_MARK)) {
                 transactionId = Long.valueOf(string.substring(3));
             }
-            if (string.startsWith("<C>")) {
+            if (string.startsWith(Transaction.CREDITOR_MARK)) {
                 creditor = string.substring(3);
             }
-            if (string.startsWith("<D>")) {
+            if (string.startsWith(Transaction.DEBITOR_MARK)) {
                 debitor = string.substring(3);
             }
-            if (string.startsWith("<A>")) {
+            if (string.startsWith(Transaction.AMOUNT_MARK)) {
                 amount = Double.valueOf(string.substring(3));
             }
-            if (string.startsWith("<M>")) {
+            if (string.startsWith(Transaction.MESSAGE_MARK)) {
                 message = string.substring(3);
             }
         }

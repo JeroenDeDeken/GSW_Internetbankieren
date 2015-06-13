@@ -1,6 +1,6 @@
 package BookingCentral;
 
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  *
@@ -8,11 +8,19 @@ import java.util.UUID;
  */
 public class Transaction {
     
-    private long transactionId;
-    private String debitor;
-    private String creditor;
-    private double amount;
-    private String message;
+    public static final String SPLIT_STRING = "|"; //Possibly exchange
+    public static final String ID_MARK = "<T>";
+    public static final String CREDITOR_MARK = "<C>";
+    public static final String DEBITOR_MARK = "<D>";
+    public static final String AMOUNT_MARK = "<A>";
+    public static final String MESSAGE_MARK = "<M>";
+    public static final String STATE_MARK = "<S>";
+    
+    private final long transactionId;
+    private final String debitor;
+    private final String creditor;
+    private final double amount;
+    private final String message;
     
     /**
      * Create a new transaction with a specified transactionID
@@ -73,11 +81,11 @@ public class Transaction {
     @Override
     public String toString() {
         String retval = new String();
-        retval += "SPLIT<T>" + String.valueOf(transactionId);
-        retval += "SPLIT<C>" + creditor;
-        retval += "SPLIT<D>" + debitor;
-        retval += "SPLIT<A>" + String.valueOf(amount);
-        retval += "SPLIT<M>" + message;
+        retval += SPLIT_STRING + ID_MARK + String.valueOf(transactionId);
+        retval += SPLIT_STRING + CREDITOR_MARK + creditor;
+        retval += SPLIT_STRING + DEBITOR_MARK + debitor;
+        retval += SPLIT_STRING + AMOUNT_MARK + String.valueOf(amount);
+        retval += SPLIT_STRING + MESSAGE_MARK + message;
         return retval;
     }
     
@@ -95,5 +103,16 @@ public class Transaction {
         }
         
         return retval;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (int) (this.transactionId ^ (this.transactionId >>> 32));
+        hash = 97 * hash + Objects.hashCode(this.debitor);
+        hash = 97 * hash + Objects.hashCode(this.creditor);
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.amount) ^ (Double.doubleToLongBits(this.amount) >>> 32));
+        hash = 97 * hash + Objects.hashCode(this.message);
+        return hash;
     }
 }
