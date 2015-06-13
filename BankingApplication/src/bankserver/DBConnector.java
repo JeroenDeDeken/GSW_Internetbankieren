@@ -478,7 +478,7 @@ public class DBConnector {
             int accountID = stmt.executeUpdate();
             
             account.setAccountID(accountID);
-            account.setIBAN(String.format("%s%010d", BankServer.bankCode, accountID));
+            account.setIBAN(String.format("%s%010d", BankServer.BANKING_CODE, accountID));
             
             sql = "UPDATE Account SET IBAN = ? WHERE AccountID = ?";
             connection.prepareStatement(sql);

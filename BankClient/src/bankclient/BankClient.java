@@ -31,6 +31,7 @@ public class BankClient extends Application {
     public final static String REGISTER_FXML = "RegisterDocument.fxml";
     public final static String ACCOUNTS_FXML = "AccountsDocument.fxml";
     public final static String ACCOUNT_FXML = "AccountDocument.fxml";
+    public final static String TRANSACTION_FXML = "TransactionDocument.fxml";
     public final static String NEW_TRANSACTION_FXML = "NewTransactionDocument.fxml";
     
     private final String PREF_BANK_URL = "pref_bank_url";
@@ -39,8 +40,6 @@ public class BankClient extends Application {
     private Stage stage;
     private ClientService service;
     private static BankClient instance;
-    
-    private Integer sessionID = null, selectedAccountID = null;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -67,26 +66,33 @@ public class BankClient extends Application {
                 this.stage = stage;
                 showFXMLDocument(LOGIN_FXML);
                 this.stage.show();
+                
+                return;
             }
             catch (Exception ex) {
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Bank client application");
-                alert.setHeaderText("Error");
-                alert.setContentText("Failed to connect to the server '" + url + "'!" + System.lineSeparator() + "(" + fullUrl + ")");
-
-                alert.showAndWait();
-
-                start(stage);
+                showAlert(AlertType.INFORMATION, "Bank client application", "Error", "Failed to connect to the server '" + url + "'!" + System.lineSeparator() + "(" + fullUrl + ")");
             }
         }
         else {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Bank client application");
-            alert.setHeaderText("Error");
-            alert.setContentText("You have to enter a url/ip-address before you may continue!");
-
-            alert.showAndWait();
+            showAlert(AlertType.INFORMATION, "Bank client application", "Error", "You have to enter a url/ip-address before you may continue!");
         }
+        start(stage);
+    }
+    
+    /**
+     * Shows a alert with the given parameters
+     * @param type The {Link AlertType}, defines the icon
+     * @param title The title of the alert
+     * @param header The main content of the alert
+     * @param content The description of the alert
+     */
+    public static void showAlert(AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        alert.showAndWait();
     }
     
     /**
@@ -126,22 +132,6 @@ public class BankClient extends Application {
 
     public ClientService getService() {
         return service;
-    }
-
-    public static Integer getSessionID() {
-        return instance.sessionID;
-    }
-
-    public static void setSessionID(Integer sessionID) {
-        instance.sessionID = sessionID;
-    }
-
-    public static Integer getSelectedAccountID() {
-        return instance.selectedAccountID;
-    }
-
-    public static void setSelectedAccountID(Integer accountID) {
-        instance.selectedAccountID = accountID;
     }
 
     /**

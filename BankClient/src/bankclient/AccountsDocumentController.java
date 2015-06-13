@@ -33,8 +33,6 @@ public class AccountsDocumentController implements Initializable {
     @FXML private Label lblName;
     @FXML private ListView lbAccounts;
     
-    private List<AccountExtended> mAccounts;
-    
     /**
      * Initializes the controller class.
      */
@@ -47,8 +45,7 @@ public class AccountsDocumentController implements Initializable {
     
     @FXML
     private void handleViewAccountAction(ActionEvent event) {
-        //TODO load account transactions
-        BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
+        viewAccount();
     }
     
     @FXML
@@ -61,20 +58,20 @@ public class AccountsDocumentController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             try {
-                Account account = BankClient.getInstance().getService().createAccount(BankClient.getSessionID());
+                Account account = BankClient.getInstance().getService().createAccount(Globals.getSessionID());
                 if (account == null) {
-                     showError("Server Error", "Something went wrong on the server while creating the account.", "Please try again in a few minutes");
+                     BankClient.showAlert(AlertType.ERROR, "Server Error", "Something went wrong on the server while creating the account.", "Please try again in a few minutes");
                     return;
                 }
 
-                if (mAccounts == null) {
-                    mAccounts = new ArrayList<>();
+                if (Globals.getCustomerAccounts() == null) {
+                    Globals.setCustomerAccounts(new ArrayList<>());
                 }
-                mAccounts.add(new AccountExtended(account));
-                lbAccounts.getItems().setAll(mAccounts);
+                Globals.getCustomerAccounts().add(new AccountExtended(account));
+                lbAccounts.getItems().setAll(Globals.getCustomerAccounts());
             }
             catch (Exception e) {
-                showError("Network error", "Something went wrong trying to creating the account.", "Please check your internet connection.");
+                BankClient.showAlert(AlertType.ERROR, "Network error", "Something went wrong trying to creating the account.", "Please check your internet connection.");
             }
         }
     }
@@ -91,19 +88,19 @@ public class AccountsDocumentController implements Initializable {
     
     private void getAccounts() {
         try {
-            List<Account> accounts = BankClient.getInstance().getService().getAccounts(BankClient.getSessionID());
+            List<Account> accounts = BankClient.getInstance().getService().getAccounts(Globals.getSessionID());
             if (accounts != null) {
                 for (Account account : accounts) {
-                    mAccounts.add(new AccountExtended(account));
+                    Globals.getCustomerAccounts().add(new AccountExtended(account));
                 }
-                lbAccounts.getItems().setAll(mAccounts);
+                lbAccounts.getItems().setAll(Globals.getCustomerAccounts());
             }
             else {
-                showError("Server Error", "Something went wrong on the server while retrieving the accounts.", "Please try again in a few minutes");
+                BankClient.showAlert(AlertType.ERROR, "Server Error", "Something went wrong on the server while retrieving the accounts.", "Please try again in a few minutes");
             }
         }
         catch (Exception ex) {
-            showError("Network error", "Failed to retrieve accounts from the server.", "Please check your internet connection.");
+            BankClient.showAlert(AlertType.ERROR, "Network error", "Failed to retrieve accounts from the server.", "Please check your internet connection.");
         }
     }
     
@@ -111,19 +108,15 @@ public class AccountsDocumentController implements Initializable {
         lbAccounts.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent click) {
-                Account account = (Account)lbAccounts.getSelectionModel().getSelectedItem();
-                BankClient.setSelectedAccountID(account.getAccountID());
-                BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
+                viewAccount();
             }
         });
     }
     
-    private void showError(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-
-        alert.showAndWait();
+    private void viewAccount() {
+        AccountExtended account = (AccountExtended)lbAccounts.getSelectionModel().getSelectedItem();
+        Globals.setSelectedAccount(account);
+        if (account == null) return;
+        BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNT_FXML);
     }
 }

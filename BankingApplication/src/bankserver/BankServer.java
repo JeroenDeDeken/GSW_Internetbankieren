@@ -1,10 +1,5 @@
 package bankserver;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import javax.xml.ws.Endpoint;
 
 /**
@@ -21,49 +16,23 @@ public class BankServer {
     }
 
     //The banking code used for IBAN
-    public static final String bankCode = "GSW";
-    private static final String soapUrl = "http://localhost:8080/BankServer";
-
-    // socket connection
-    private static PrintWriter out;
-    private static BufferedReader in;
-    private static ServerHandler handler;
+    public static final String BANKING_CODE = "GSW";
+    private static final String SOAP_URL = "http://localhost:8080/BankServer";
+    
+    private static CentralConnection mCentralConnection;
     
     /**
      * @param args the command line arguments
-     * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
-        
-        try {
-            Socket socket = new Socket("localhost", 4444);
-
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-            
-            String inputLine;
-            handler = new ServerHandler(out);
-            
-            while ((inputLine = in.readLine()) != null) {
-                handler.processInput(inputLine);
-            }
-            
-            out.close();
-            in.close();
-            socket.close();
-        }
-        catch (Exception e) {
-            System.err.println("Could not listen on port: 4444.");
-            System.exit(-1);
-        }
+        mCentralConnection = new CentralConnection();
     }
     
     private static void launchSoapClientService() {
         try {
-            Endpoint.publish(soapUrl, ClientService.getInstance());
+            Endpoint.publish(SOAP_URL, ClientService.getInstance());
         } catch (Exception ex) {
             System.err.println("Exception: " + ex.getMessage());
         }
@@ -85,7 +54,7 @@ public class BankServer {
             }
             else {
                 retVal = TransactionState.WAITING;
-                sendTransactionToCentral(transaction);
+                if (mCentralConnection != null) mCentralConnection.sendTransactionToCentral(transaction);
             }
         }
         DBConnector.changeTransactionState(transaction, retVal);
@@ -153,32 +122,7 @@ public class BankServer {
         Iterable<Transaction> transactionList = DBConnector.getUnprocessedTransactions();
         
         for(Transaction transaction : transactionList) {
-            sendTransactionToCentral(transaction);
-        }
-    }
-    
-    /**
-     * When the credit account is no customer of this bank send the transaction to 
-     * the banking central for processing
-     * @param transaction 
-     */
-    private void sendTransactionToCentral(Transaction transaction) {
-        boolean sendSucceeded = false;
-        
-        // send the transaction to the banking central
-        try {
-            handler.sendTransaction(transaction);
-            sendSucceeded = true;
-        }
-        catch (Exception e) {
-            System.out.println("error sending transaction to server");
-        }
-        
-        if (sendSucceeded) {
-            DBConnector.changeTransactionState(transaction, TransactionState.SENDTOCENTRAL);
-        }
-        else {
-            DBConnector.changeTransactionState(transaction, TransactionState.WAITING);
+            if (mCentralConnection != null) mCentralConnection.sendTransactionToCentral(transaction);
         }
     }
     

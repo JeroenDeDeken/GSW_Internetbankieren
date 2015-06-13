@@ -58,7 +58,7 @@ public class LoginDocumentController implements Initializable {
             }
 
             switch (status) {
-                case SUCCESS: BankClient.setSessionID(sessionID.value); break;
+                case SUCCESS: Globals.setSessionID(sessionID.value); break;
                 case MISSING_FIELDS: setResult("No username or password specified."); return;
                 case SERVER_ERROR: setResult("Something went wrong, try again later."); return;
                 case NOT_FOUND: setResult("Username & password combination not found."); return;
