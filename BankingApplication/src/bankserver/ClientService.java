@@ -77,7 +77,7 @@ public class ClientService {
     }
     
     /**
-     * Login a user with the provided username & password.
+     * Login a user with the provided username &amp; password.
      * @param username
      * @param password
      * @param sessionID

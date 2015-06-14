@@ -46,6 +46,8 @@ public class LoginDocumentController implements Initializable {
                 setResult("Enter a username & password first!");
                 return;
             }
+            
+            password = Util.toSHA512(password);
 
             final Holder<Integer> sessionID = new Holder<>();
 

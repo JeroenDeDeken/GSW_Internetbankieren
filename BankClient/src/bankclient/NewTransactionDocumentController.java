@@ -69,7 +69,7 @@ public class NewTransactionDocumentController implements Initializable {
             
             Object selected = cbbToAccount.getSelectionModel().getSelectedItem();
             if (selected instanceof String) {
-                if (!BankClient.isValidIBAN(selected.toString())) {
+                if (!Util.isValidIBAN(selected.toString())) {
                     setResult("No valid amount above €0,00 entered.");
                     return;
                 }

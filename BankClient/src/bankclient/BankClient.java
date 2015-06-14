@@ -160,19 +160,4 @@ public class BankClient extends Application {
         }
         return null;
     }
-    
-    /**
-     * Performs checks if the given string is a valid IBAN code.
-     * A valid IBAN consists of the first 3 a letter, and the next 10 of a number
-     * @param IBAN The string to check
-     * @return true when the given string is valid
-     */
-    public static boolean isValidIBAN(String IBAN) {
-        if (IBAN == null) return false;
-        if (IBAN.length() != 13) return false;
-        if (!IBAN.substring(0, 3).matches("[a-zA-Z]+")) return false;
-        if (!IBAN.substring(3, 13).matches("[0-9]+")) return false;
-            
-        return true;
-    }
 }
