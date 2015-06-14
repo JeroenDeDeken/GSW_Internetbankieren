@@ -20,6 +20,7 @@ public class BankingCentral {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
+        DBConnector.createDatabase();
         // Set a timer to proces the waiting transactions every minute.
         Timer procesTransactionsTimer = new Timer();
         procesTransactionsTimer.schedule(new TimerTask() {
@@ -59,8 +60,9 @@ public class BankingCentral {
      * Check the database and process unfinished transactions
      */
     private static void ProcessTransactions() {
+        System.out.println("Processing transactions");
         Iterable<Transaction> transactionList = DBConnector.getUnprocessedTransactions();
-        
+
         for(Transaction transaction : transactionList) {
             CentralServerRunnable bankToSendTo = findBankByAccountNumber(transaction.getCreditor());
             if (bankToSendTo != null) {
@@ -81,8 +83,9 @@ public class BankingCentral {
     /**
      * Find the bank which owns a given account number
      * @param accountNumber
+     * @return the CentralServerRunnable object which holds the connection to the bank server
      */
-    private static CentralServerRunnable findBankByAccountNumber(String accountNumber) {
+    static CentralServerRunnable findBankByAccountNumber(String accountNumber) {
         CentralServerRunnable retval = null;
         for (CentralServerRunnable bank : connectedBanks) {
             if (accountNumber.contains(bank.bankName)) {

@@ -386,7 +386,7 @@ public class DBConnector {
             result = stmt.executeQuery();
             
             if (result.next()) {
-                returnValue = result.getInt(1);
+                returnValue = result.getDouble(1);
             }
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -686,6 +686,44 @@ public class DBConnector {
         }
         
         return transactions;
+    }
+    
+    /**
+     * Get the credit for a given account
+     * @param accountIBANNumber
+     * @return 
+     */
+    public static double getAccountCredit(String accountIBANNumber) {
+        if (connection == null) {
+            if (!connect()) {
+                return -99999999;
+            }
+        }
+
+        ResultSet result = null;
+        double returnValue = -88888888;
+        String sql = "SELECT Credit FROM Account WHERE IBAN = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, accountIBANNumber);
+            result = stmt.executeQuery();
+            
+            if (result.next()) {
+                returnValue = result.getDouble(1);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return returnValue;
     }
     
     /**

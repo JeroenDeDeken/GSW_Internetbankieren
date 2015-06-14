@@ -21,9 +21,11 @@ public class CentralConnection {
     private static PrintWriter out;
     private static BufferedReader in;
     private static ServerHandler handler;
+    private static String bankName;
     
-    public CentralConnection() {
+    public CentralConnection(String bankName) {
         try {
+            this.bankName = bankName;
             Socket socket = new Socket("localhost", 4444);
 
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -32,6 +34,9 @@ public class CentralConnection {
             
             String inputLine;
             handler = new ServerHandler(out);
+            
+            System.out.println("Connection: Send bankname " + bankName);
+            handler.sendBankName(bankName);
             
             while ((inputLine = in.readLine()) != null) {
                 handler.processInput(inputLine);

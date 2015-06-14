@@ -4,3 +4,4 @@
 /BankingApplication/build/
 /CentraleBank/build/
 /BankingApplication/dist/
+*.db

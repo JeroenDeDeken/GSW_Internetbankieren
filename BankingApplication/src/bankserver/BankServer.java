@@ -19,6 +19,8 @@ public class BankServer {
     public static final String BANKING_CODE = "GSW";
     private static final String SOAP_URL = "http://localhost:8080/BankServer";
     
+    private static String bankName = "RABO";
+    
     private static CentralConnection mCentralConnection;
     
     /**
@@ -27,7 +29,7 @@ public class BankServer {
     public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
-        mCentralConnection = new CentralConnection();
+        mCentralConnection = new CentralConnection(bankName);
     }
     
     private static void launchSoapClientService() {
@@ -104,8 +106,9 @@ public class BankServer {
         if (findAccount(accountNumber)) {
             double oldBalance = DBConnector.getAccountBalance(accountNumber);
             double newBalance = oldBalance - amount;
-            // TODO: IMPLEMENT POSSIBLE NEGATIVE VALUES
-            if (newBalance >= 0) {
+            // check if this account has credit
+            double credit = DBConnector.getAccountCredit(accountNumber);
+            if (newBalance + credit >= 0) {
                 DBConnector.setAccountBalance(accountNumber, newBalance);
                 retVal = true;
             }

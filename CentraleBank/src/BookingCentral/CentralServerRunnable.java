@@ -43,6 +43,10 @@ public class CentralServerRunnable implements Runnable {
                    
 	    while ((inputLine = in.readLine()) != null) {
 		handler.processInput(inputLine);
+                if (handler.bankName != null) {
+                    bankName = handler.bankName;
+                    System.out.println("bankname set to " + bankName);
+                }
 	    }
 	    out.close();
 	    in.close();
@@ -61,5 +65,9 @@ public class CentralServerRunnable implements Runnable {
      */
     public boolean sendTransaction(Transaction transaction) {
         return handler.sendToBank(transaction);
+    }
+    
+    protected boolean sendTransactionState(Transaction transaction, TransactionState state) {
+        return handler.sendTransactionState(transaction, state);
     }
 }

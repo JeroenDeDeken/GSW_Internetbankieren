@@ -11,6 +11,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class TransactionHandler {
     
     private PrintWriter output;
+    protected String bankName = null;
 
     /**
      * create a new transactionhandler
@@ -26,12 +27,16 @@ public class TransactionHandler {
      * @param input
      */
     public void processInput(String input) {
-        if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction
+        if (input.startsWith("<NAME>")) {
+            bankName = input.substring(6);
+        }
+        else if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction
             int index = input.indexOf(Transaction.SPLIT_STRING);
             String state = input.substring(3, index);
             TransactionState transactionState = TransactionState.valueOf(state);
             Transaction transaction = splitTransaction(input.substring(index));
             DBConnector.changeTransactionState(transaction, transactionState);
+            returnTransactionState(transaction, transactionState);
         }
         else { // insert new transaction
             Transaction transaction = splitTransaction(input);
@@ -105,7 +110,28 @@ public class TransactionHandler {
      * @param transaction
      * @param state 
      */
-    private static void returnTransactionState(Transaction transaction, TransactionState state) {
-        throw new NotImplementedException();
+    private void returnTransactionState(Transaction transaction, TransactionState state) {
+        CentralServerRunnable bankToSendTo = BankingCentral.findBankByAccountNumber(transaction.getDebitor());
+        
+        bankToSendTo.sendTransactionState(transaction, state);
+    }
+    
+    /**
+     * When another bank has processed a transaction coming from the bank this instance
+     * is connected to the state of the transaction has to be processed.
+     * @param transaction
+     * @param state
+     * @return true when succeeded
+     */
+    public boolean sendTransactionState(Transaction transaction, TransactionState state) {
+        try {
+            String message = Transaction.STATE_MARK + TransactionState.SUCCEEDED;
+            message += transaction.toString();
+            output.println(message);
+            return true;
+        }
+        catch (Exception ex) {
+            return false;
+        }
     }
 }

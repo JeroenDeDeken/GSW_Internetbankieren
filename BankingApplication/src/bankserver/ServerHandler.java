@@ -11,21 +11,49 @@ class ServerHandler {
     
     private PrintWriter output;
     
+    /**
+     * create a new serverHandler object which takes care of the communication
+     * @param out 
+     */
     public ServerHandler(PrintWriter out) {
         output = out;
     }
     
+    /**
+     * Process the input coming from the central server.
+     * This can be a new transaction to book or a change to the state of
+     * an existing transaction.
+     * @param input 
+     */
     public void processInput(String input) {
-        Transaction transaction = splitTransaction(input);
-        if (bookTransaction(transaction)) {
-            sendSucces(transaction);
+        if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction
+            int index = input.indexOf(Transaction.SPLIT_STRING);
+            String state = input.substring(3, index);
+            TransactionState transactionState = TransactionState.valueOf(state);
+            Transaction transaction = splitTransaction(input.substring(index));
+            DBConnector.changeTransactionState(transaction, transactionState);
+        }
+        else { // new transaction
+            Transaction transaction = splitTransaction(input);
+            if (bookTransaction(transaction)) {
+                sendSucces(transaction);
+            }
         }
     }
 
+    /**
+     * Send a new transaction to the central server for further processing.
+     * @param transaction 
+     */
     protected void sendTransaction(Transaction transaction) {
         output.println(transaction.toString());
     }
     
+    /**
+     * Split a message string and create a transaction object from it.
+     * @param input
+     * @return the transaction represented by the input string
+     */
     protected Transaction splitTransaction(String input) {
         String[] strings = input.split(Pattern.quote(Transaction.SPLIT_STRING));
         
@@ -56,6 +84,11 @@ class ServerHandler {
         return new Transaction(transactionId, debitor, creditor, amount, message);
     }
     
+    /**
+     * Book a transaction on the database and credit the account with the amount
+     * @param transaction
+     * @return 
+     */
     private boolean bookTransaction(Transaction transaction) {
         DBConnector.insertTransaction(transaction);
         
@@ -69,6 +102,12 @@ class ServerHandler {
         return true;
     }
     
+    /**
+     * Find the account for the given account number and add the amount to the balance
+     * @param accountNumber
+     * @param amount
+     * @return 
+     */
     public synchronized boolean creditAccount(String accountNumber, double amount) {
         boolean retVal = false;
         
@@ -82,13 +121,32 @@ class ServerHandler {
         return retVal;
     }
     
+    /**
+     * Find the account for the given account number
+     * @param accountNumber
+     * @return true when the account is found
+     */
     public boolean findAccount(String accountNumber) {
         return DBConnector.checkCustomerForAccount(accountNumber);
     }
 
+    /**
+     * Send back a message to the central when a transaction is processed successfully
+     * @param transaction 
+     */
     private void sendSucces(Transaction transaction) {
         String message = Transaction.STATE_MARK + TransactionState.SUCCEEDED;
         message += transaction.toString();
+        output.println(message);
+    }
+
+    /**
+     * Send the name of this bank to the central server
+     * @param bankName 
+     */
+    protected void sendBankName(String bankName) {
+        System.out.println("Handler: Send bankname " + bankName);
+        String message = "<NAME>" + bankName;
         output.println(message);
     }
 }
