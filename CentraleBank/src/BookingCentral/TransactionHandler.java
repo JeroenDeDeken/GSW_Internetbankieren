@@ -27,7 +27,7 @@ public class TransactionHandler {
      * @param input
      */
     public void processInput(String input) {
-        if (input.startsWith("<NAME>")) {
+        if (input.startsWith(Transaction.NAME_MARK)) {
             bankName = input.substring(6);
         }
         else if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction

@@ -328,7 +328,11 @@ public class DBConnector {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.setString(3, residence);
-            customerID = stmt.executeUpdate();
+            
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                customerID = rs.getInt(1);
+            }
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
         } finally {
@@ -467,6 +471,8 @@ public class DBConnector {
                 return false;
             }
         }
+            
+        int accountID = -1;
         
         String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?,?,?)";
         
@@ -475,13 +481,25 @@ public class DBConnector {
             stmt.setDouble(2, account.getBalance());
             stmt.setDouble(3, account.getCredit());
             
-            int accountID = stmt.executeUpdate();
+            stmt.executeUpdate();
             
-            account.setAccountID(accountID);
-            account.setIBAN(String.format("%s%010d", BankServer.BANKING_CODE, accountID));
-            
-            sql = "UPDATE Account SET IBAN = ? WHERE AccountID = ?";
-            connection.prepareStatement(sql);
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs != null && rs.next()) {
+                accountID = rs.getInt(1);
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+        
+        account.setAccountID(accountID);
+        account.setIBAN(String.format("%s%010d", BankServer.BANKING_CODE, accountID));
+        
+        sql = "UPDATE Account SET IBAN = ? WHERE AccountID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, account.getIBAN());
             stmt.setInt(2, accountID);
             stmt.execute();

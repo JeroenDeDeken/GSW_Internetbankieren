@@ -90,6 +90,7 @@ public class AccountsDocumentController implements Initializable {
         try {
             List<Account> accounts = BankClient.getInstance().getService().getAccounts(Globals.getSessionID());
             if (accounts != null) {
+                Globals.setCustomerAccounts(new ArrayList<>());
                 for (Account account : accounts) {
                     Globals.getCustomerAccounts().add(new AccountExtended(account));
                 }

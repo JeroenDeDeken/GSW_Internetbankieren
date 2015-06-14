@@ -6,6 +6,7 @@
 package bankclient;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -68,6 +69,7 @@ public class AccountDocumentController implements Initializable {
         try {
             List<Transaction> transactions = BankClient.getInstance().getService().getTransactionsForAccount(Globals.getSessionID(), Globals.getSelectedAccount().getAccountID());
             if (transactions != null) {
+                Globals.setAccountTransactions(new ArrayList<>());
                 for (Transaction transaction : transactions) {
                     Globals.getAccountTransactions().add(new TransactionExtended(transaction));
                 }

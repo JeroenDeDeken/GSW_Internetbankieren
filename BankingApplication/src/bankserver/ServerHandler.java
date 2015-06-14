@@ -146,7 +146,7 @@ class ServerHandler {
      */
     protected void sendBankName(String bankName) {
         System.out.println("Handler: Send bankname " + bankName);
-        String message = "<NAME>" + bankName;
+        String message = Transaction.NAME_MARK + bankName;
         output.println(message);
     }
 }

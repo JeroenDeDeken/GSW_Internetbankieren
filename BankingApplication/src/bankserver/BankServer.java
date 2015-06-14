@@ -16,10 +16,9 @@ public class BankServer {
     }
 
     //The banking code used for IBAN
+    public static final String BANKING_NAME = "Gedistribueerde Software";
     public static final String BANKING_CODE = "GSW";
     private static final String SOAP_URL = "http://localhost:8080/BankServer";
-    
-    private static String bankName = "RABO";
     
     private static CentralConnection mCentralConnection;
     
@@ -29,9 +28,12 @@ public class BankServer {
     public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
-        mCentralConnection = new CentralConnection(bankName);
+        mCentralConnection = new CentralConnection(BANKING_CODE);
     }
     
+    /**
+     * Launches the SOAP webservice for bank clients.
+     */
     private static void launchSoapClientService() {
         try {
             Endpoint.publish(SOAP_URL, ClientService.getInstance());
@@ -129,12 +131,18 @@ public class BankServer {
         }
     }
     
+    /**
+     * Performs checks if the given string is a valid IBAN code.
+     * A valid IBAN consists of the first 3 a letter, and the next 10 of a number
+     * @param IBAN The string to check
+     * @return true when the given string is valid
+     */
     public boolean isValidIBAN(String IBAN) {
         if (IBAN == null) return false;
         if (IBAN.length() != 13) return false;
         if (!IBAN.substring(0, 3).matches("[a-zA-Z]+")) return false;
         if (!IBAN.substring(3, 13).matches("[0-9]+")) return false;
-        
+            
         return true;
     }
 }

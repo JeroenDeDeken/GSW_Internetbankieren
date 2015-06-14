@@ -6,18 +6,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bankclient.NewTransactionDocumentController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bankclient.NewTransactionDocumentController">
    <children>
       <Button layoutX="14.0" layoutY="326.0" mnemonicParsing="false" onAction="#handleBackAction" prefHeight="26.0" prefWidth="130.0" text="Terug" />
       <Button layoutX="14.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleLogoutAction" prefHeight="26.0" prefWidth="130.0" text="Uitloggen" />
-      <Button layoutX="456.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleCreateTransactionAction" prefHeight="26.0" prefWidth="130.0" text="Verzenden" />
+      <Button fx:id="btnCreate" layoutX="456.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleCreateTransactionAction" prefHeight="26.0" prefWidth="130.0" text="Verzenden" />
       <ChoiceBox fx:id="ccbFromAccount" layoutX="163.0" layoutY="47.0" prefHeight="26.0" prefWidth="163.0" />
       <Label layoutX="163.0" layoutY="23.0" text="Van rekening:" />
       <Label layoutX="163.0" layoutY="84.0" text="Naar rekening:" />
-      <ComboBox fx:id="cbbToAccount" layoutX="163.0" layoutY="109.0" prefHeight="26.0" prefWidth="163.0" />
+      <ComboBox fx:id="cbbToAccount" editable="true" layoutX="163.0" layoutY="109.0" prefHeight="26.0" prefWidth="163.0" />
       <Label layoutX="163.0" layoutY="143.0" text="Bedrag in €:" />
       <TextField fx:id="tfAmount" layoutX="163.0" layoutY="165.0" />
       <TextArea fx:id="taMessage" layoutX="163.0" layoutY="229.0" prefHeight="115.0" prefWidth="420.0" />
       <Label layoutX="163.0" layoutY="200.0" text="Omschrijving:" />
+      <Label fx:id="lblResult" layoutX="163.0" layoutY="365.0" prefHeight="16.0" prefWidth="284.0" textFill="RED" />
    </children>
 </AnchorPane>

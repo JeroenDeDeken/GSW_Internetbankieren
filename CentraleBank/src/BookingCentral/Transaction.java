@@ -15,6 +15,7 @@ public class Transaction {
     public static final String AMOUNT_MARK = "<A>";
     public static final String MESSAGE_MARK = "<M>";
     public static final String STATE_MARK = "<S>";
+    public static final String NAME_MARK = "<N>";
     
     private final long transactionId;
     private final String debitor;
