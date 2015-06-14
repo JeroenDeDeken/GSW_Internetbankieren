@@ -121,7 +121,7 @@ public class NewTransactionDocumentController implements Initializable {
                 case SERVER_ERROR: setResult("Something went wrong, try again later."); return;
                 default: setResult("A unknown error happened, try again later."); return;
             }
-            BankClient.showAlert(AlertType.INFORMATION, "Transaction Complete", "The transaction was send out succesfully", "");
+            BankClient.showAlert(AlertType.INFORMATION, "Transaction Complete", "The transaction was send out succesfully", String.format("Credit: %s\nDebit: %s\nAmount: €%f\nMessage: %s", creditIBAN, debitIBAN, amount, descripton));
             BankClient.goBack();
         }
         catch (Exception ex) {
