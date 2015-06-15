@@ -138,13 +138,14 @@
 <xs:sequence>
 <xs:element name="username" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="password" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="residense" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="residence" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="registerResponse">
 <xs:sequence>
 <xs:element name="return" type="tns:registerStatus" minOccurs="0"></xs:element>
+<xs:element name="sessionID" type="xs:int" minOccurs="0"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
