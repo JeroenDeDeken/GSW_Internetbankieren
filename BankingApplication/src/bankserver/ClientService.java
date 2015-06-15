@@ -16,6 +16,8 @@ import javax.xml.ws.Holder;
  */
 @WebService
 public class ClientService {
+    private static final double CREDIT_LIMIT = 100;
+    
     private static ClientService cs;
     public static ClientService getInstance() {
         if (cs == null) cs = new ClientService();
@@ -155,7 +157,7 @@ public class ClientService {
     public Account createAccount(@WebParam(name = "sessionID") int sessionID) {
         //TODO Determine the credit
         
-        Account account = new Account(0, 0);
+        Account account = new Account(5, CREDIT_LIMIT);
         DBConnector.connectCustomerAccount(account.getAccountID(), DBConnector.getUserIDForSessionID(sessionID));
         return account;
     }
