@@ -328,6 +328,7 @@ public class DBConnector {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.setString(3, residence);
+            stmt.executeUpdate();
             
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs != null && rs.next()) {
