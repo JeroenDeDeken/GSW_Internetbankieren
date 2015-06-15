@@ -608,6 +608,27 @@ public class DBConnector {
     }
     
     /**
+     * Connects a accountID to a transactionID for listing
+     * @param accountID
+     * @param transactionID
+     * @return 
+     */
+    public static boolean connectTransactionAccount(int accountID, int transactionID) {
+        String sql = "INSERT INTO AccountTransaction (AccountID, TransactionID) VALUES (?, ?);";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, accountID);
+            stmt.setInt(2, transactionID);
+            stmt.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
      * Change the transaction state of a given transaction.
      * @param transaction
      * @param state
