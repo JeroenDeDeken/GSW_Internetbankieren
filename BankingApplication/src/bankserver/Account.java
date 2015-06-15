@@ -46,6 +46,8 @@ public class Account {
      * @param credit
      */
     public Account(Integer accountID, String IBAN, double balance, double credit) {
+        this.balance = balance;
+        this.credit = credit;
         if (accountID == null && IBAN == null) {
             DBConnector.createNewCustomerAccount(this);
         }
@@ -53,8 +55,6 @@ public class Account {
             this.accountID = accountID;
             this.IBAN = IBAN;
         }
-        this.balance = balance;
-        this.credit = credit;
     }
 
     @XmlAttribute
