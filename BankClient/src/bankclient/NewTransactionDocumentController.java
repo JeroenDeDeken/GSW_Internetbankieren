@@ -74,7 +74,7 @@ public class NewTransactionDocumentController implements Initializable {
             }
             else if (selected instanceof String) {
                 if (!Util.isValidIBAN(selected.toString())) {
-                    setResult("No valid amount above €0,00 entered.");
+                    setResult("No valid credit IBAN entered.");
                     return;
                 }
                 creditIBAN = cbbToAccount.getSelectionModel().getSelectedItem().toString();
@@ -107,7 +107,7 @@ public class NewTransactionDocumentController implements Initializable {
             NewTransactionStatus status;
             try {
                 Holder<Transaction> newTransaction = new Holder<>();
-                status = BankClient.getInstance().getService().createTransaction(Globals.getSessionID(), debitIBAN, creditIBAN, 50, descripton, newTransaction);
+                status = BankClient.getInstance().getService().createTransaction(Globals.getSessionID(), debitIBAN, creditIBAN, amount, descripton, newTransaction);
             }
             catch (Exception ex) {
                 setResult("Failed to retrieve transactions from the server." + System.lineSeparator() + "Please check your internet connection.");

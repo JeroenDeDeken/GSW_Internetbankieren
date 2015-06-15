@@ -355,18 +355,20 @@ public class DBConnector {
      * @return 
      */
     public static boolean checkCustomerForAccount(String accountNumber) {
-        boolean exists = false; //TODO update with new database set
-        //TODO LET OP SQL INJECTIE!!!!!
-//        String sql = "SELECT COUNT(*) FROM Accounts WHERE lower(AccountNr) = lower(" + accountNumber + ")";
-//        try {
-//            ResultSet result = executeSelect(sql);
-//            if (result.next()) {
-//                exists = (result.getInt(1) > 0);
-//            }
-//        } catch (SQLException ex) {
-//            System.err.println("checkCustomerForAccount: " + ex.getMessage());
-//        }        
-//        
+        boolean exists = false;
+        
+        String sql = "SELECT COUNT(*) FROM Account WHERE IBAN = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            stmt.setString(1, accountNumber);
+            ResultSet result = stmt.executeQuery();
+            
+            if (result != null && result.next()) {
+                exists = (result.getInt(1) > 0);
+            }
+        } catch (SQLException ex) {
+            System.err.println("checkCustomerForAccount: " + ex.getMessage());
+        }        
+        
         return exists;
     }
     
