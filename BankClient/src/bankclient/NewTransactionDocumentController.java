@@ -68,16 +68,16 @@ public class NewTransactionDocumentController implements Initializable {
             debitIBAN = selectedDebit.getIban();
             
             Object selected = cbbToAccount.getSelectionModel().getSelectedItem();
-            if (selected instanceof String) {
+            if (selected instanceof AccountExtended) {
+                selectedCredit = (AccountExtended)selected;
+                creditIBAN = selectedCredit.getIban();
+            }
+            else if (selected instanceof String) {
                 if (!Util.isValidIBAN(selected.toString())) {
                     setResult("No valid amount above €0,00 entered.");
                     return;
                 }
                 creditIBAN = cbbToAccount.getSelectionModel().getSelectedItem().toString();
-            }
-            else if (selected instanceof AccountExtended) {
-                selectedCredit = (AccountExtended)selected;
-                creditIBAN = selectedCredit.getIban();
             }
             else {
                 setResult("Failed to retrieve the debit IBAN.");
@@ -107,7 +107,7 @@ public class NewTransactionDocumentController implements Initializable {
             NewTransactionStatus status;
             try {
                 Holder<Transaction> newTransaction = new Holder<>();
-                status = BankClient.getInstance().getService().createTransaction(Globals.getSessionID(), "debit", "credit", 50, "description", newTransaction);
+                status = BankClient.getInstance().getService().createTransaction(Globals.getSessionID(), debitIBAN, creditIBAN, 50, descripton, newTransaction);
             }
             catch (Exception ex) {
                 setResult("Failed to retrieve transactions from the server." + System.lineSeparator() + "Please check your internet connection.");
@@ -123,12 +123,12 @@ public class NewTransactionDocumentController implements Initializable {
             }
             BankClient.showAlert(AlertType.INFORMATION, "Transaction Complete", "The transaction was send out succesfully", String.format("Credit: %s\nDebit: %s\nAmount: €%f\nMessage: %s", creditIBAN, debitIBAN, amount, descripton));
             BankClient.goBack();
+            setResult("");
         }
         catch (Exception ex) {
             ex.printStackTrace();
         }
         finally {
-            setResult("");
         }
     }
     
