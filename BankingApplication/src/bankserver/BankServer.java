@@ -84,7 +84,14 @@ public class BankServer {
         TransactionState retVal = TransactionState.FAILED;
         
         DBConnector.insertTransaction(transaction);
-
+//        Integer accountID = null;
+//        accountID = DBConnector.getAcccountIDForIBAN(transaction.getCreditor());
+//        if (accountID != null)
+//            DBConnector.connectTransactionAccount(accountID, transaction.getTransactionId());
+//        accountID = DBConnector.getAcccountIDForIBAN(transaction.getDebitor());
+//        if (accountID != null)
+//            DBConnector.connectTransactionAccount(accountID, transaction.getTransactionId());
+//        
         if (debitAccount(transaction.getDebitor(), transaction.getAmount())) {
             if (creditAccount(transaction.getCreditor(), transaction.getAmount())){
                 retVal = TransactionState.SUCCEEDED;
