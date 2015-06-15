@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  *
@@ -59,6 +60,9 @@ public class CentralConnection implements Runnable {
         }
         catch (ConnectException e) {
             System.out.println("Failed to connect to the central bank, error: " + e.getMessage());
+        }
+        catch (SocketException e) {
+            System.out.println("Lost connection to the central bank, error: " + e.getMessage());
         }
         catch (Exception e) {
             //Failed to c

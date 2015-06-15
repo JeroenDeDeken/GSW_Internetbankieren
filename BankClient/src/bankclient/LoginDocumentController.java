@@ -70,9 +70,10 @@ public class LoginDocumentController implements Initializable {
             }
 
             BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
-        } catch (Exception ex) {
-        } finally {
             setResult("");
+        } catch (Exception ex) {
+            setResult("Something in the client went wrong");
+        } finally {
         }
     }
     

@@ -96,10 +96,11 @@ public class RegisterDocumentController implements Initializable {
             Globals.setSessionID(sessionID.value);
             Globals.setUsername(username);
             BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
+            setResult("");
         } catch (NoSuchAlgorithmException ex) {
+            setResult("Something went wrong in the application");
         }
         finally {
-            setResult("");
         }
     }
     
