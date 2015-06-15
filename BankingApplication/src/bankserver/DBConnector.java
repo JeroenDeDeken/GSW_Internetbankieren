@@ -524,7 +524,7 @@ public class DBConnector {
             return false;
         }
         
-        return false;
+        return true;
     }
 
     /**
@@ -559,7 +559,7 @@ public class DBConnector {
     public static List<Account> getAccountsForCustomerID(int customerID) {
         List<Account> accounts = null;
         ResultSet result;
-        String sql = "SELECT AccountID, IBAN, Balance, Credit FROM Account WHERE AccountID = (SELECT AccountID FROM CustomerAccount WHERE CustomerID = ?)";
+        String sql = "SELECT AccountID, IBAN, Balance, Credit FROM Account WHERE AccountID IN (SELECT AccountID FROM CustomerAccount WHERE CustomerID = ?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, customerID);
@@ -690,7 +690,7 @@ public class DBConnector {
         List<Transaction> transactions = null;
         ResultSet result;
         
-        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transactions WHERE TransactionID = (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
+        String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transactions WHERE TransactionID IN (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountID);
