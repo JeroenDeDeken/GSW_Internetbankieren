@@ -143,7 +143,7 @@ public class ClientService {
         
         transaction.value = new Transaction(fromAccount, toAccount, amount, description);
         
-        if (BankServer.getInstance().processTransaction(transaction.value) != TransactionState.FAILED) {
+        if (BankServer.getInstance().processTransaction(transaction.value) == TransactionState.FAILED) {
             return newTransactionStatus.serverError;
         }
         return newTransactionStatus.success;
