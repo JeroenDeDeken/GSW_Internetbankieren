@@ -80,6 +80,7 @@ public class BankServer {
      * @return false when transaction could not be processed
      */
     public TransactionState processTransaction(Transaction transaction) {
+        System.out.println("Start processing transaction. (ID: " + transaction.getTransactionId() + ")");
         TransactionState retVal = TransactionState.FAILED;
         
         DBConnector.insertTransaction(transaction);
@@ -156,6 +157,7 @@ public class BankServer {
      * When the banking central is unavailable the state will not be changed so it can later on be processed
      */
     private static void sendUnprocessedTransactions() {
+        System.out.println("Sending unprocessed transactions to the banking central.");
         Iterable<Transaction> transactionList = DBConnector.getUnprocessedTransactions();
         
         for(Transaction transaction : transactionList) {
