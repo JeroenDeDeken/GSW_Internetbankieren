@@ -1,5 +1,9 @@
 package bankserver;
 
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
 /**
@@ -16,11 +20,13 @@ public class BankServer {
     }
 
     //The banking code used for IBAN
+    //Local
     public static final String BANKING_NAME = "ABN Amro";
     public static final String BANKING_CODE = "ABN";
     private static final String SOAP_URL = "http://localhost:8080/BankServer";
     private static final String CENTRAL_URL = "localhost";
     private static final int CENTRAL_PORT = 4444;
+    //Test PC
 //    public static final String BANKING_NAME = "Rabobank";
 //    public static final String BANKING_CODE = "RAB";
 //    private static final String SOAP_URL = "http://localhost:8080/BankServer";
@@ -43,7 +49,13 @@ public class BankServer {
      */
     private static void launchSoapClientService() {
         try {
-            Endpoint.publish(SOAP_URL, ClientService.getInstance());
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            HttpContext c = server.createContext("/BankServer");
+            Endpoint e = Endpoint.create(ClientService.getInstance());
+            e.publish(c);
+            server.setExecutor(null);
+            server.start();
+//            Endpoint.publish(SOAP_URL, ClientService.getInstance());
         } catch (Exception ex) {
             System.err.println("Exception: " + ex.getMessage());
         }

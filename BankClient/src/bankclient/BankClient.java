@@ -52,31 +52,33 @@ public class BankClient extends Application {
         if (result.isPresent()){
             System.out.println("URL entered: " + result.get());
             
-            String url = result.get();
-            String fullUrl = "http://" + url + ":8080/BankServer?wsdl";
-            
-            try {
-                ClientServiceService css = new ClientServiceService(new URL(fullUrl));
+            if (!result.get().isEmpty()) {
+                String url = result.get();
+                String fullUrl = "http://" + url + ":8080/BankServer?wsdl";
 
-                service = new ClientServiceService().getClientServicePort();
-                instance = this;
-                
-                saveBankUrl(url);
+                try {
+                    ClientServiceService css = new ClientServiceService(new URL(fullUrl));
 
-                this.stage = stage;
-                showFXMLDocument(LOGIN_FXML);
-                this.stage.show();
-                
-                return;
+                    service = new ClientServiceService().getClientServicePort();
+                    instance = this;
+
+                    saveBankUrl(url);
+
+                    this.stage = stage;
+                    showFXMLDocument(LOGIN_FXML);
+                    this.stage.show();
+
+                    return;
+                }
+                catch (Exception ex) {
+                    showAlert(AlertType.INFORMATION, "Bank client application", "Error", "Failed to connect to the server '" + url + "'!" + System.lineSeparator() + "(" + fullUrl + ")");
+                }
             }
-            catch (Exception ex) {
-                showAlert(AlertType.INFORMATION, "Bank client application", "Error", "Failed to connect to the server '" + url + "'!" + System.lineSeparator() + "(" + fullUrl + ")");
+            else {
+                showAlert(AlertType.INFORMATION, "Bank client application", "Error", "You have to enter a url/ip-address before you may continue!");
             }
+            start(stage);
         }
-        else {
-            showAlert(AlertType.INFORMATION, "Bank client application", "Error", "You have to enter a url/ip-address before you may continue!");
-        }
-        start(stage);
     }
     
     /**
