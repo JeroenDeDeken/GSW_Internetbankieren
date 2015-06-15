@@ -589,6 +589,14 @@ public class DBConnector {
                 return false;
             }
         }
+        
+        Integer accountID = null;
+        accountID = getAcccountIDForIBAN(transaction.getCreditor());
+        if (accountID != null)
+            connectTransactionAccount(accountID, transaction.getTransactionId());
+        accountID = getAcccountIDForIBAN(transaction.getDebitor());
+        if (accountID != null)
+            connectTransactionAccount(accountID, transaction.getTransactionId());
  
         String sql = "INSERT INTO Transactions (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
         
