@@ -36,7 +36,7 @@ public class BankClient extends Application {
     
     private final String PREF_BANK_URL = "pref_bank_url";
     
-    private String lastScene = "";
+    private String lastScene = "", currentScene = "";
     private Stage stage;
     private ClientService service;
     private static BankClient instance;
@@ -145,7 +145,8 @@ public class BankClient extends Application {
 
     public Parent showFXMLDocument(String fxml) {
         try {
-            lastScene = fxml;
+            lastScene = currentScene;
+            currentScene = fxml;
             
             Parent page = (Parent)FXMLLoader.load(getClass().getResource(fxml));
             Scene scene = stage.getScene();
