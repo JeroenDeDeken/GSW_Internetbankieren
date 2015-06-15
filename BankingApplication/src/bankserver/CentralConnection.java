@@ -23,10 +23,10 @@ public class CentralConnection {
     private static ServerHandler handler;
     private static String bankName;
     
-    public CentralConnection(String bankName) {
+    public CentralConnection(String bankName, String centralUrl, int centralPort) {
         try {
             this.bankName = bankName;
-            Socket socket = new Socket("localhost", 4444);
+            Socket socket = new Socket(centralUrl, centralPort);
 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(

@@ -28,7 +28,7 @@ class ServerHandler {
     public void processInput(String input) {
         if (input.startsWith(Transaction.STATE_MARK)) { // existing transaction
             int index = input.indexOf(Transaction.SPLIT_STRING);
-            String state = input.substring(3, index);
+            String state = input.substring(Transaction.STATE_MARK.length(), index);
             TransactionState transactionState = TransactionState.valueOf(state);
             Transaction transaction = splitTransaction(input.substring(index));
             DBConnector.changeTransactionState(transaction, transactionState);
@@ -65,19 +65,19 @@ class ServerHandler {
         
         for (String string : strings) {
             if (string.startsWith(Transaction.ID_MARK)) {
-                transactionId = Long.valueOf(string.substring(3));
+                transactionId = Long.valueOf(string.substring(Transaction.ID_MARK.length()));
             }
             if (string.startsWith(Transaction.CREDITOR_MARK)) {
-                creditor = string.substring(3);
+                creditor = string.substring(Transaction.CREDITOR_MARK.length());
             }
             if (string.startsWith(Transaction.DEBITOR_MARK)) {
-                debitor = string.substring(3);
+                debitor = string.substring(Transaction.DEBITOR_MARK.length());
             }
             if (string.startsWith(Transaction.AMOUNT_MARK)) {
-                amount = Double.valueOf(string.substring(3));
+                amount = Double.valueOf(string.substring(Transaction.AMOUNT_MARK.length()));
             }
             if (string.startsWith(Transaction.MESSAGE_MARK)) {
-                message = string.substring(3);
+                message = string.substring(Transaction.MESSAGE_MARK.length());
             }
         }
         

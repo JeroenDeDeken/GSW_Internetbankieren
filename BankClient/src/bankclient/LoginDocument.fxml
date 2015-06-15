@@ -13,7 +13,7 @@
       <PasswordField fx:id="tfPassword" layoutX="265.0" layoutY="156.0" prefHeight="26.0" prefWidth="100.0" />
       <Label layoutX="166.0" layoutY="161.0" prefHeight="16.0" prefWidth="86.0" text="Wachtwoord:" />
       <Label layoutX="165.0" layoutY="125.0" prefHeight="16.0" prefWidth="80.0" text="Naam:" />
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="174.0" layoutY="34.0" prefHeight="36.0" prefWidth="252.0" text="Bank Client" textAlignment="CENTER">
+      <Label fx:id="lblHeader" alignment="CENTER" contentDisplay="CENTER" layoutX="3.0" layoutY="34.0" prefHeight="36.0" prefWidth="593.0" text="Bank Client" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>

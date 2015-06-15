@@ -50,6 +50,14 @@ public class ClientService {
     }
     
     /**
+     * Returns the name of the bank.
+     * @return
+     */
+    public String getBankName() {
+        return BankServer.BANKING_NAME;
+    }
+    
+    /**
      * Register a user with the given parameters.
      * @param username The username of the user, must be unique.
      * @param password The password of the user, must be 6 characters long.

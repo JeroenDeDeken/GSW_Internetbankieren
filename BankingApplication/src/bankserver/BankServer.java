@@ -16,9 +16,16 @@ public class BankServer {
     }
 
     //The banking code used for IBAN
-    public static final String BANKING_NAME = "Gedistribueerde Software";
-    public static final String BANKING_CODE = "GSW";
+    public static final String BANKING_NAME = "ABN Amro";
+    public static final String BANKING_CODE = "ABN";
     private static final String SOAP_URL = "http://localhost:8080/BankServer";
+    private static final String CENTRAL_URL = "localhost";
+    private static final int CENTRAL_PORT = 4444;
+//    public static final String BANKING_NAME = "Rabobank";
+//    public static final String BANKING_CODE = "RAB";
+//    private static final String SOAP_URL = "http://localhost:8080/BankServer";
+//    private static final String CENTRAL_URL = "192.168.1.2";
+//    private static final int CENTRAL_PORT = 4444;
     
     private static CentralConnection mCentralConnection;
     
@@ -28,7 +35,7 @@ public class BankServer {
     public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
-        mCentralConnection = new CentralConnection(BANKING_CODE);
+        mCentralConnection = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
     }
     
     /**

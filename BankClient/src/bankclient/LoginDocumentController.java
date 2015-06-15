@@ -22,13 +22,15 @@ import soapclient.LoginStatus;
  */
 public class LoginDocumentController implements Initializable {
     
-    @FXML private Label lblResult;
+    @FXML private Label lblHeader, lblResult;
     @FXML private TextField tfName, tfPassword;
     @FXML private Button btnLogin, btnRegister;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO retrieve announcements and give a messagebox
+        
+        getBankName();
     }
     
     @FXML
@@ -82,5 +84,14 @@ public class LoginDocumentController implements Initializable {
     @FXML
     private void handleRegisterAction(ActionEvent event) {
         BankClient.getInstance().showFXMLDocument(BankClient.REGISTER_FXML);
+    }
+    
+    private void getBankName() {
+        try {
+            lblHeader.setText(BankClient.getInstance().getService().getBankName() + " - Client");
+        }
+        catch (Exception ex) {
+            
+        }
     }
 }

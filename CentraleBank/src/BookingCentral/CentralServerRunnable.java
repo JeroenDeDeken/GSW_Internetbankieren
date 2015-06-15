@@ -31,10 +31,12 @@ public class CentralServerRunnable implements Runnable {
     public void run() {
         System.out.println("thread started.");
         
+        BufferedReader in = null;
+        
         try {
             alive = true;
 	    out = new PrintWriter(socket.getOutputStream(), true);
-	    BufferedReader in = new BufferedReader(
+	    in = new BufferedReader(
 				    new InputStreamReader(
 				    socket.getInputStream()));
 
@@ -48,14 +50,21 @@ public class CentralServerRunnable implements Runnable {
                     System.out.println("bankname set to " + bankName);
                 }
 	    }
-	    out.close();
-	    in.close();
-	    socket.close();
-            alive = false;
-
 	} catch (IOException e) {
-	    e.printStackTrace();
+            
 	}
+        finally {
+            try {
+                if (out != null) out.close();
+                if (out != null) in.close();
+                if (socket != null) socket.close();
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            alive = false;
+            System.out.println("Connection closed: " + bankName);
+        }
     }
 
     /**
