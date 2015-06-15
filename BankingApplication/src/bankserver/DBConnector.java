@@ -173,7 +173,7 @@ public class DBConnector {
             if (!existingTables.contains(table)) {
                 sql = "CREATE TABLE `" + table + "` (\n" +
                       "   `AccountID`     INTEGER NOT NULL REFERENCES Account(AccountID),\n" +
-                      "   `TransactionID` INTEGER NOT NULL REFERENCES Transactions(TransactionID)\n" +
+                      "   `TransactionID` LONG NOT NULL REFERENCES Transactions(TransactionID)\n" +
                       ");";
                 stmt.executeUpdate(sql);
                 System.out.println("Table " + table + " created successfully");
@@ -615,12 +615,12 @@ public class DBConnector {
      * @param transactionID
      * @return 
      */
-    public static boolean connectTransactionAccount(int accountID, int transactionID) {
+    public static boolean connectTransactionAccount(int accountID, long transactionID) {
         String sql = "INSERT INTO AccountTransaction (AccountID, TransactionID) VALUES (?, ?);";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountID);
-            stmt.setInt(2, transactionID);
+            stmt.setLong(2, transactionID);
             stmt.execute();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -728,6 +728,38 @@ public class DBConnector {
         }
         
         return transactions;
+    }
+    
+    /**
+     * Get the associated AccountID for the given IBAN
+     * @param IBAN 
+     * @return null when the IBAN is not found
+     */
+    public static Integer getAcccountIDForIBAN(String IBAN) {
+        ResultSet result = null;
+        Integer accountID = null;
+        String sql = "SELECT AccountID FROM Account WHERE IBAN = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, IBAN);
+            result = stmt.executeQuery();
+            
+            if (result.next()) {
+                accountID = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return accountID;
     }
     
     /**
