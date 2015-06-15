@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javax.xml.ws.Holder;
 import soapclient.RegisterStatus;
 
 /**
@@ -71,10 +72,12 @@ public class RegisterDocumentController implements Initializable {
             }
             
             password = Util.toSHA512(password);
+
+            final Holder<Integer> sessionID = new Holder<>();
             
             RegisterStatus status;
             try {
-                status = BankClient.getInstance().getService().register(username, password, residence);
+                status = BankClient.getInstance().getService().register(username, password, residence, sessionID);
             } catch (Exception ex) {
                 setResult("Something went wrong sending the request to the banking server." + System.lineSeparator() + "Please try again later.");
                 return;
@@ -90,6 +93,7 @@ public class RegisterDocumentController implements Initializable {
                 default: setResult("A unknown error happened, try again later."); return;
             }
             
+            Globals.setSessionID(sessionID.value);
             Globals.setUsername(username);
             BankClient.getInstance().showFXMLDocument(BankClient.ACCOUNTS_FXML);
         } catch (NoSuchAlgorithmException ex) {

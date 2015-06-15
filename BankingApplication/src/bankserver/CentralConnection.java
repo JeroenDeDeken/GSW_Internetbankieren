@@ -23,11 +23,11 @@ public class CentralConnection implements Runnable {
     private static ServerHandler handler;
     private static String bankName;
     private Socket socket;
-    private String centralUrl;
-    private int centralPort;
+    private final String centralUrl;
+    private final int centralPort;
     
     public CentralConnection(String bankName, String centralUrl, int centralPort) {
-        this.bankName = bankName;
+        CentralConnection.bankName = bankName;
         this.centralUrl = centralUrl;
         this.centralPort = centralPort;
     }

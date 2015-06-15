@@ -64,7 +64,8 @@ public class ClientService {
      * @param residence The residence of the user, may not be empty.
      * @return Register status code.
      */
-    public registerStatus register(@WebParam(name = "username") String username, @WebParam(name = "password") String password,@WebParam(name = "residense") String residence) {
+    public registerStatus register(@WebParam(name = "username") String username, @WebParam(name = "password") String password,@WebParam(name = "residence") String residence,
+                               @WebParam(name = "sessionID", mode = WebParam.Mode.OUT) Holder<Integer> sessionID) {
         username = username.trim();
         if (username.isEmpty() || password.isEmpty() || residence.trim().isEmpty()) return registerStatus.missingFields;
         
@@ -78,6 +79,8 @@ public class ClientService {
             } else if (result < 0) {
                 return registerStatus.usernameAlreadyExists;
             }
+            if (login(username, password, sessionID) != loginStatus.success)
+                return registerStatus.serverError;
             return registerStatus.success;
         } catch (Exception ex) {
             return registerStatus.serverError;
