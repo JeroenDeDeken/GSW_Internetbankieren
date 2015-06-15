@@ -209,7 +209,7 @@ public class DBConnector {
      * @param password The password of the user to log in.
      * @return The ID of the session created, if the user is not found it will return -1, when a (database) error happened returns null.
      */
-    public static Integer loginUser(String username, String password) {        
+    public static Integer loginUser(String username, String password) {
         if (connection == null)
             if (!connect())
                 return null;
@@ -293,6 +293,10 @@ public class DBConnector {
      * @return The customerID of the user registered, null on a exception and -1 when the user already exists.
      */
     public static Integer registerUser(String username, String password, String residence) {
+        if (connection == null)
+            if (!connect())
+                return null;
+        
         Integer customerID = null;
         boolean exists = false;
         ResultSet result = null;

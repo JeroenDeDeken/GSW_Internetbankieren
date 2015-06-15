@@ -65,6 +65,7 @@ public class ClientService {
      * @param username The username of the user, must be unique.
      * @param password The password of the user, must be 6 characters long.
      * @param residence The residence of the user, may not be empty.
+     * @param sessionID The session that will be created on success.
      * @return Register status code.
      */
     public registerStatus register(@WebParam(name = "username") String username, @WebParam(name = "password") String password,@WebParam(name = "residence") String residence,
