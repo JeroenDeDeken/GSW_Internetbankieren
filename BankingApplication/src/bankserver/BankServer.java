@@ -3,6 +3,8 @@ package bankserver;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
@@ -45,6 +47,14 @@ public class BankServer {
         mCentralConnection = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
         Thread t = new Thread(mCentralConnection);
         t.start();
+        
+        Timer sendUnprocessedTransactionTimer = new Timer();
+        sendUnprocessedTransactionTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendUnprocessedTransactions();
+            }
+        }, 1000, 60000);
     }
     
     /**
@@ -145,7 +155,7 @@ public class BankServer {
      * Check all unprocessed transactions on the database and send them to the banking central.
      * When the banking central is unavailable the state will not be changed so it can later on be processed
      */
-    private void sendUnprocessedTransactions() {
+    private static void sendUnprocessedTransactions() {
         Iterable<Transaction> transactionList = DBConnector.getUnprocessedTransactions();
         
         for(Transaction transaction : transactionList) {
