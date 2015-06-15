@@ -15,18 +15,29 @@ import java.net.Socket;
  *
  * @author Roy
  */
-public class CentralConnection {
+public class CentralConnection implements Runnable {
 
     // socket connection
     private static PrintWriter out;
     private static BufferedReader in;
     private static ServerHandler handler;
     private static String bankName;
+    private Socket socket;
+    private String centralUrl;
+    private int centralPort;
     
     public CentralConnection(String bankName, String centralUrl, int centralPort) {
-        try {
-            this.bankName = bankName;
-            Socket socket = new Socket(centralUrl, centralPort);
+        this.bankName = bankName;
+        this.centralUrl = centralUrl;
+        this.centralPort = centralPort;
+    }
+    
+    @Override
+    public void run() {
+        System.out.println("thread started.");
+        
+        try {            
+            socket = new Socket(centralUrl, centralPort);
 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(

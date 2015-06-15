@@ -41,7 +41,10 @@ public class BankServer {
     public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
+        
         mCentralConnection = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
+        Thread t = new Thread(mCentralConnection);
+        t.start();
     }
     
     /**
