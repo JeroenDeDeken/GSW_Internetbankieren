@@ -62,7 +62,7 @@ public class DBConnector {
     public static void removeDatabase() {
         disconnect();
         //TODO cleanup, do not use a static path
-        Path path = FileSystems.getDefault().getPath("D:\\Git\\GSW_Internetbankieren\\BankingApplication", "BankServer.db");
+        Path path = FileSystems.getDefault().getPath("..\\BankingApplication", "BankServer.db");
         System.out.println("Delete file " + path.toString());
         try {
             Files.deleteIfExists(path);

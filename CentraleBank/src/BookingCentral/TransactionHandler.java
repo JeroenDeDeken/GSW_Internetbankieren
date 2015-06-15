@@ -2,7 +2,6 @@ package BookingCentral;
 
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -85,7 +84,7 @@ public class TransactionHandler {
      * @param transaction 
      * @return true when successfully added the transaction
      */
-    private boolean bookTransaction(Transaction transaction) {
+    private synchronized boolean bookTransaction(Transaction transaction) {
         return DBConnector.insertTransaction(transaction);
     }
 
