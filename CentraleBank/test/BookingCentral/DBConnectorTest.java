@@ -54,20 +54,10 @@ public class DBConnectorTest {
     }
 
     /**
-     * Test of disconnect method, of class DBConnector.
-     */
-    @Test
-    public void testDisconnect() {
-        System.out.println("disconnect");
-        boolean expResult = true;
-        boolean result = DBConnector.disconnect();
-        assertEquals(expResult, result);
-    }
-
-    /**
      * Test the transaction methods in the dbconnector class.
      * This will add a new transaction, change the transactionstate 
      * and request all unprocessed transactions.
+     * Sometimes this method fails due to the order of processing the tests.
      */
     @Test
     public void testTransaction() {
@@ -97,6 +87,18 @@ public class DBConnectorTest {
         System.out.println("getUnprocessedTransactions");
         Set<Transaction> set = DBConnector.getUnprocessedTransactions();
         result = set.isEmpty();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of disconnect method, of class DBConnector.
+     * This method may cause others to fail. Run tests seperatly.
+     */
+    @Test
+    public void testDisconnect() {
+        System.out.println("disconnect");
+        boolean expResult = true;
+        boolean result = DBConnector.disconnect();
         assertEquals(expResult, result);
     }
 }

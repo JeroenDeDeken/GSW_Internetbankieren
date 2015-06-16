@@ -61,7 +61,7 @@ public class DBConnector {
     protected static void removeDatabase() {
         disconnect();
         
-        Path path = FileSystems.getDefault().getPath("D:\\Git\\GSW_Internetbankieren\\CentraleBank", "CentralServer.db");
+        Path path = FileSystems.getDefault().getPath("..\\CentraleBank", "CentralServer.db");
         System.out.println("Delete file " + path.toString());
         try {
             Files.deleteIfExists(path);
@@ -217,13 +217,4 @@ public class DBConnector {
 
         return returnValue;
     }
-    
-    /**
-     * write logging to the database
-     * @param severity
-     * @param message 
-     */
-//    protected void writeLogging(String severity, String message) {
-//        
-//    }
 }
