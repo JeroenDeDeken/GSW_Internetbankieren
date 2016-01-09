@@ -23,6 +23,11 @@ import java.util.logging.Logger;
  * @author Jeroen
  */
 public class DBConnector {
+    
+    private static final String DB_URL = "CentralServer.db";
+    private static final String DB_DEBUG_URL = "CentralServerDebug.db";
+    
+    public static boolean debug = false;
 
     private static Connection connection = null;
     
@@ -33,7 +38,9 @@ public class DBConnector {
     protected static boolean connect() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:CentralServer.db");
+            
+            connection = DriverManager.getConnection("jdbc:sqlite:" + getUrl());
+            
             return true;
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -47,12 +54,19 @@ public class DBConnector {
      */
     protected static boolean disconnect() {
         try {
-            if (connection != null) connection.close();
+            if (connection != null) {
+                connection.close();
+            }
+            
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+    
+    protected static String getUrl() {
+        return debug ? DB_DEBUG_URL : DB_URL;
     }
     
     /**
@@ -61,7 +75,7 @@ public class DBConnector {
     protected static void removeDatabase() {
         disconnect();
         
-        Path path = FileSystems.getDefault().getPath("..\\CentraleBank", "CentralServer.db");
+        Path path = FileSystems.getDefault().getPath("..\\CentraleBank", getUrl());
         System.out.println("Delete file " + path.toString());
         try {
             Files.deleteIfExists(path);
@@ -75,7 +89,9 @@ public class DBConnector {
      * Create the database when it is not existing
      */
     protected static void createDatabase() {
-        if (connection == null) connect();
+        if (connection == null) {
+            connect();
+        }
         
         try (Statement stmt = connection.createStatement()) {
             List<String> existingTables = new ArrayList<>();

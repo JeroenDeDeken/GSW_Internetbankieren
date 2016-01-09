@@ -25,6 +25,8 @@ public class DBConnectorTest {
      */
     @BeforeClass
     public static void setUpClass() {
+        DBConnector.debug = true;
+        
         DBConnector.createDatabase();
     }
     
@@ -114,9 +116,12 @@ public class DBConnectorTest {
         
         System.out.println("getUnprocessedTransactions");
         Iterable<Transaction> resultSet = DBConnector.getUnprocessedTransactions();
+        int count = 0;
         for(Transaction returnedTransaction : resultSet) {
             assertEquals(transaction.getTransactionId(), returnedTransaction.getTransactionId());
+            count++;
         }
+        assertEquals(1, count);
     }
 
     /**

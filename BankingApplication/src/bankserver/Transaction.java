@@ -142,7 +142,9 @@ public class Transaction {
     
     @Override
     public boolean equals(Object o) {
-        if (getClass() != o.getClass()) return false;
+        if (!(o instanceof Transaction)) {
+            return false;
+        }
         
         Transaction otherTransaction = (Transaction) o;
         boolean retval = false;

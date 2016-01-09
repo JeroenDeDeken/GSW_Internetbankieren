@@ -23,6 +23,8 @@ public class DBConnectorTest {
      */
     @BeforeClass
     public static void setUpClass() {
+        DBConnector.debug = true;
+        
         DBConnector.createDatabase();
     }
     
@@ -75,9 +77,12 @@ public class DBConnectorTest {
         
         System.out.println("getUnprocessedTransactions");
         Iterable<Transaction> resultSet = DBConnector.getUnprocessedTransactions();
+        int count = 0;
         for(Transaction returnedTransaction : resultSet) {
             assertEquals(transaction, returnedTransaction);
+            count++;
         }
+        assertEquals(1, count);
         
         System.out.println("changeTransactionState");
         TransactionState state = TransactionState.SUCCEEDED;

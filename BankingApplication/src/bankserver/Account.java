@@ -1,7 +1,6 @@
 package bankserver;
 
 import java.util.Objects;
-import javax.jws.WebMethod;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -25,11 +24,9 @@ public class Account {
         
     }
     
-    
-//    @WebMethod
-    
     /**
      * Create a account object without identifier and save to database
+     * Creates a new IBAN with 
      * @param balance
      * @param credit
      */
@@ -39,7 +36,7 @@ public class Account {
     
     
     /**
-     * Create a account object with identifier
+     * Create a account object with identifier, only used to load existing
      * @param accountID
      * @param IBAN
      * @param balance
@@ -97,12 +94,10 @@ public class Account {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (!(obj instanceof Account)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        
         final Account other = (Account) obj;
         if (this.accountID != other.accountID) {
             return false;

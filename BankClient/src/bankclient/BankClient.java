@@ -83,7 +83,7 @@ public class BankClient extends Application {
     
     /**
      * Shows a alert with the given parameters
-     * @param type The {Link AlertType}, defines the icon
+     * @param type The {@link AlertType}, defines the icon
      * @param title The title of the alert
      * @param header The main content of the alert
      * @param content The description of the alert

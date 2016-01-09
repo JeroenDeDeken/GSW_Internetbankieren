@@ -90,8 +90,17 @@ public class Transaction {
         return retval;
     }
     
+    /**
+     * Returns if the objects are the same
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
+        if (!(o instanceof Transaction)) {
+            return false;
+        }
+        
         Transaction otherTransaction = (Transaction) o;
         boolean retval = false;
         

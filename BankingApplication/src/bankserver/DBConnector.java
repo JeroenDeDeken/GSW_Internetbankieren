@@ -23,6 +23,11 @@ import java.util.logging.Logger;
  * @author Jeroen
  */
 public class DBConnector {
+    
+    private static final String DB_URL = "BankServer.db";
+    private static final String DB_DEBUG_URL = "BankServerDebug.db";
+    
+    public static boolean debug = false;
 
     private static Connection connection = null;
     
@@ -33,7 +38,9 @@ public class DBConnector {
     public static boolean connect() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:BankServer.db");
+            
+            connection = DriverManager.getConnection("jdbc:sqlite:" + getUrl());
+            
             return true;
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -47,7 +54,9 @@ public class DBConnector {
      */
     public static boolean disconnect() {
         try {
-            if (connection != null) connection.close();
+            if (connection != null) {
+                connection.close();
+            }
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
@@ -55,13 +64,18 @@ public class DBConnector {
         }
     }
     
+    protected static String getUrl() {
+        return debug ? DB_DEBUG_URL : DB_URL;
+    }
+    
     /**
      * When testing we delete the database after the tests to make a clean testrun every time
      */
     public static void removeDatabase() {
         disconnect();
+        
         //TODO cleanup, do not use a static path
-        Path path = FileSystems.getDefault().getPath("..\\BankingApplication", "BankServer.db");
+        Path path = FileSystems.getDefault().getPath("..\\BankingApplication", getUrl());
         System.out.println("Delete file " + path.toString());
         try {
             Files.deleteIfExists(path);
@@ -75,7 +89,9 @@ public class DBConnector {
      * Creates the database with the tables.
      */
     public static void createDatabase() {
-        if (connection == null) connect();
+        if (connection == null) {
+            connect();
+        }
         
         try (Statement stmt = connection.createStatement()) {
             List<String> existingTables = new ArrayList<>();
@@ -182,24 +198,6 @@ public class DBConnector {
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-    }
-    
-    private static ResultSet executeSelect(String sql) throws SQLException {
-        if (connection == null)
-            if (!connect())
-                return null;
-        
-        ResultSet result = null;
-        try {
-            Statement stmt = connection.createStatement();
-            result = stmt.executeQuery(sql);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (result != null) result.close();
-        }
-        
-        return result;
     }
     
     /**
@@ -557,7 +555,7 @@ public class DBConnector {
     }
     
     /**
-     * Returns a @{link List} of @{link Account accounts} of the given customer.
+     * Returns a {@link List} of {@link Account accounts} of the given customer.
      * @param customerID The ID of the customer.
      * @return null on error.
      */
@@ -716,7 +714,7 @@ public class DBConnector {
     }
     
     /**
-     * Returns a @{link List} of @{link Transaction transactions} of the given @{Link Account accountID}.
+     * Returns a {@link List} of {@link Transaction transactions} of the given @{Link Account accountID}.
      * @param accountID The ID of the account.
      * @return null on error.
      */

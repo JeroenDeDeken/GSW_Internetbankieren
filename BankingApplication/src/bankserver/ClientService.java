@@ -132,6 +132,7 @@ public class ClientService {
      * @param toAccount The IBAN of the debit account.
      * @param amount The amount to transact.
      * @param description The description of the transaction.
+     * @param transaction The transaction that is created.
      * @return The status of the process.
      */
     public newTransactionStatus createTransaction(@WebParam(name = "sessionID") int sessionID,

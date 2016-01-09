@@ -90,8 +90,10 @@ public class BankServer {
                 retVal = TransactionState.SUCCEEDED;
             }
             else {
-                retVal = TransactionState.WAITING;
-                if (mCentralConnection != null) mCentralConnection.sendTransactionToCentral(transaction);
+                if (mCentralConnection != null) {
+                    retVal = TransactionState.WAITING;
+                    mCentralConnection.sendTransactionToCentral(transaction);
+                }
             }
         }
         DBConnector.changeTransactionState(transaction, retVal);
