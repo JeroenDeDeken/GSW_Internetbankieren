@@ -1,7 +1,11 @@
-/BankClient/nbproject/private/
+/BankClient/nbproject/
 /BankClient/build/
 /BankClient/dist/
+/BankingApplication/nbproject/
 /BankingApplication/build/
-/CentraleBank/build/
 /BankingApplication/dist/
+/CentraleBank/nbproject/
+/CentraleBank/build/
+/CentraleBank/dist/
+
 *.db
