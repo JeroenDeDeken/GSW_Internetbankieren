@@ -69,6 +69,7 @@ public class BankingCentral {
                 if (bankToSendTo.alive) {
                     boolean succeeded = bankToSendTo.sendTransaction(transaction);
                     if (succeeded) {
+                        System.out.println("Processed transaction");
                         DBConnector.changeTransactionState(transaction, TransactionState.SENDTOBANK);
                     }
                 }

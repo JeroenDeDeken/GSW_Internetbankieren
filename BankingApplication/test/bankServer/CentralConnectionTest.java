@@ -62,23 +62,15 @@ public class CentralConnectionTest {
             Logger.getLogger(CentralConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        long transactionId = UUID.randomUUID().getMostSignificantBits();
-        String debitor = "NL00RABO0123456789";
-        String creditor = "NL00RABO9876543210";
-        double amount = 100.0;
-        String message = "Test transaction";
-
-        System.out.println("insertTransaction");
-        Transaction transaction = new Transaction(transactionId, debitor, creditor, amount, message, TransactionState.WAITING);
-        boolean expResult = true;
-        boolean result = DBConnector.insertTransaction(transaction);
-        assertEquals(expResult, result);
+        Transaction transaction = getTestTransaction();
+        DBConnector.insertTransaction(transaction);
         
         boolean succes = cc.sendTransactionToCentral(transaction);
-        transaction = DBConnector.getTransactionForId(transaction.getTransactionId());
         if (succes) {
+            System.out.println("transaction send succesfully to central bank");
             assertEquals(TransactionState.SENDTOCENTRAL, transaction.getState());
         } else {
+            System.out.println("transaction failed to send central bank");
             assertEquals(TransactionState.WAITING, transaction.getState());
         }
         
@@ -89,6 +81,19 @@ public class CentralConnectionTest {
         }
         
         transaction = DBConnector.getTransactionForId(transaction.getTransactionId());
+        if (transaction.getState().equals(TransactionState.WAITING)) {
+            fail("Could not connect to the CentraleBank");
+        }
         assertEquals(TransactionState.SUCCEEDED, transaction.getState());
+    }
+    
+    private Transaction getTestTransaction() {
+        long transactionId = UUID.randomUUID().getMostSignificantBits();
+        String debitor = "TEST0123456789";
+        String creditor = "TEST9876543210";
+        double amount = 100.0;
+        String message = "Test transaction";
+
+        return new Transaction(transactionId, debitor, creditor, amount, message, TransactionState.WAITING);
     }
 }

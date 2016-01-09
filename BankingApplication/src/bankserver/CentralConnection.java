@@ -91,9 +91,9 @@ public class CentralConnection implements Runnable {
         }
         
         if (sendSucceeded) {
-            DBConnector.changeTransactionState(transaction, TransactionState.SENDTOCENTRAL);
+            transaction.setState(TransactionState.SENDTOCENTRAL);
         } else {
-            DBConnector.changeTransactionState(transaction, TransactionState.WAITING);
+            transaction.setState(TransactionState.WAITING);
         }
         
         return sendSucceeded;

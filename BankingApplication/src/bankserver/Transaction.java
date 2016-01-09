@@ -139,6 +139,15 @@ public class Transaction {
     public TransactionState getState() {
         return state;
     }
+
+    public void setState(TransactionState state) {
+        if (!this.state.equals(state)) {
+            DBConnector.changeTransactionState(this, state);
+        }
+        this.state = state;
+    }
+    
+    
     
     @Override
     public boolean equals(Object o) {

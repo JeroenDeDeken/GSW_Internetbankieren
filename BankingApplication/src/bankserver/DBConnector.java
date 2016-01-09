@@ -645,12 +645,14 @@ public class DBConnector {
         String sql = "INSERT INTO Transactions (TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State) VALUES (?,?,?,?,?,?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            TransactionState state = (transaction.getState() != null ? transaction.getState() : TransactionState.INITIAL);
+            
             stmt.setLong(1, transaction.getTransactionId());
             stmt.setString(2, transaction.getDebitor());
             stmt.setString(3, transaction.getCreditor());
             stmt.setDouble(4, transaction.getAmount());
             stmt.setString(5, transaction.getMessage());
-            stmt.setInt(6, transaction.getState().value);
+            stmt.setInt(6, state.value);
             
             stmt.executeUpdate();
             stmt.close();
