@@ -28,7 +28,7 @@ public class BankingCentral {
             public void run() {
                 ProcessTransactions();
             }
-        }, 1000,60000);
+        }, 1000, 1000);
         
         connectedBanks = new HashSet<>();
         

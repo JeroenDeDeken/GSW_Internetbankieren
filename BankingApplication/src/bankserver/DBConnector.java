@@ -103,6 +103,7 @@ public class DBConnector {
                     existingTables.add(resultSet.getString(3));
                     System.out.println("Database table found: " + resultSet.getString(3));
                 }
+                resultSet.close();
             }
             
             String sql, table;
@@ -309,6 +310,7 @@ public class DBConnector {
             if (result.next()) {
                 exists = (result.getInt(1) > 0);
             }
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
         } finally {
@@ -337,6 +339,7 @@ public class DBConnector {
             if (rs != null && rs.next()) {
                 customerID = rs.getInt(1);
             }
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
         } finally {
@@ -359,18 +362,27 @@ public class DBConnector {
      */
     public static boolean checkCustomerForAccount(String accountNumber) {
         boolean exists = false;
+        ResultSet result = null;
         
         String sql = "SELECT COUNT(*) FROM Account WHERE IBAN = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setString(1, accountNumber);
-            ResultSet result = stmt.executeQuery();
+            result = stmt.executeQuery();
             
             if (result != null && result.next()) {
                 exists = (result.getInt(1) > 0);
             }
         } catch (SQLException ex) {
             System.err.println("checkCustomerForAccount: " + ex.getMessage());
-        }        
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } 
         
         return exists;
     }
@@ -432,6 +444,7 @@ public class DBConnector {
             stmt.setDouble(1, balance);
             stmt.setString(2, accountIBANNumber);
             stmt.execute();
+            stmt.close();
             return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -479,6 +492,7 @@ public class DBConnector {
         }
             
         int accountID = -1;
+        ResultSet result = null;
         
         String sql = "INSERT INTO Account (IBAN, Balance, Credit) VALUES (?,?,?)";
         
@@ -489,9 +503,9 @@ public class DBConnector {
             
             stmt.executeUpdate();
             
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs != null && rs.next()) {
-                accountID = rs.getInt(1);
+            result = stmt.getGeneratedKeys();
+            if (result != null && result.next()) {
+                accountID = result.getInt(1);
             }
             else {
                 return false;
@@ -499,6 +513,14 @@ public class DBConnector {
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         
         account.setAccountID(accountID);
@@ -509,6 +531,7 @@ public class DBConnector {
             stmt.setString(1, account.getIBAN());
             stmt.setInt(2, accountID);
             stmt.execute();
+            stmt.close();
             return true;
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
@@ -524,6 +547,7 @@ public class DBConnector {
             stmt.setInt(1, customerID);
             stmt.setInt(2, accountID);
             stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
@@ -539,7 +563,7 @@ public class DBConnector {
      */
     public static Integer getUserIDForSessionID(int sessionID) {
         Integer customerID = null;
-        ResultSet result;
+        ResultSet result = null;
         String sql = "SELECT CustomerID FROM Session WHERE SessionID = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -549,8 +573,17 @@ public class DBConnector {
             if (result.next()) {
                 customerID = result.getInt(1);
             }
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         
         return customerID;
@@ -563,7 +596,7 @@ public class DBConnector {
      */
     public static List<Account> getAccountsForCustomerID(int customerID) {
         List<Account> accounts = null;
-        ResultSet result;
+        ResultSet result = null;
         String sql = "SELECT AccountID, IBAN, Balance, Credit FROM Account WHERE AccountID IN (SELECT AccountID FROM CustomerAccount WHERE CustomerID = ?)";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -576,6 +609,14 @@ public class DBConnector {
             }
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         
         return accounts;
@@ -609,9 +650,10 @@ public class DBConnector {
             stmt.setString(3, transaction.getCreditor());
             stmt.setDouble(4, transaction.getAmount());
             stmt.setString(5, transaction.getMessage());
-            stmt.setInt(6, TransactionState.INITIAL.value);
+            stmt.setInt(6, transaction.getState().value);
             
             stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
@@ -633,6 +675,7 @@ public class DBConnector {
             stmt.setInt(1, accountID);
             stmt.setLong(2, transactionID);
             stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
@@ -661,12 +704,59 @@ public class DBConnector {
             stmt.setLong(2, transaction.getTransactionId());
             
             stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
             return false;
         }
         
         return true;
+    }
+    
+    /**
+     * Get the transaction from the ID
+     * @param id
+     * @return null when failed
+     */
+    public static Transaction getTransactionForId(long id) {
+        if (connection == null) {
+            if (!connect()) {
+                return null;
+            }
+        }
+ 
+        ResultSet result = null;
+        Transaction returnValue = null;
+
+        String sql = "SELECT TransactionID, DebitIBAN, CreditIBAN, Amount, Message, State FROM Transactions WHERE TransactionID = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            result = stmt.executeQuery();
+            
+            if (result.next()) {
+                long transactionId = result.getLong("TransactionID");
+                String debitIBAN = result.getString("DebitIBAN");
+                String creditIBAN = result.getString("CreditIBAN");
+                double amount = result.getDouble("Amount");
+                String message = result.getString("Message");
+                TransactionState state = TransactionState.fromValue(result.getInt("State"));
+                
+                returnValue = new Transaction(transactionId, debitIBAN, creditIBAN, amount, message, state);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return returnValue;
     }
     
     /**
@@ -708,7 +798,6 @@ public class DBConnector {
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                result = null;
             }
         }
 
@@ -722,7 +811,7 @@ public class DBConnector {
      */
     public static List<Transaction> getTransactionsForAccountID(int accountID) {
         List<Transaction> transactions = null;
-        ResultSet result;
+        ResultSet result = null;
         
         String sql = "SELECT TransactionID, debitIBAN, creditIBAN, Amount, Message, State FROM Transactions WHERE TransactionID IN (SELECT TransactionID FROM AccountTransaction WHERE AccountID = ?)";
         
@@ -734,8 +823,17 @@ public class DBConnector {
             while (result.next()) {
                 transactions.add(new Transaction(result.getLong(1), result.getString(2), result.getString(3), result.getDouble(4), result.getString(5), TransactionState.fromValue(result.getInt(6))));
             }
+            stmt.close();
         } catch (SQLException e) {
             Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         
         return transactions;

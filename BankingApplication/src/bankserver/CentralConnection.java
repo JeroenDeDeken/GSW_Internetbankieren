@@ -76,8 +76,9 @@ public class CentralConnection implements Runnable {
      * When the credit account is no customer of this bank send the transaction to 
      * the banking central for processing
      * @param transaction 
+     * @return if the sending succeeded
      */
-    public void sendTransactionToCentral(Transaction transaction) {
+    public boolean sendTransactionToCentral(Transaction transaction) {
         boolean sendSucceeded = false;
         
         // send the transaction to the banking central
@@ -86,14 +87,15 @@ public class CentralConnection implements Runnable {
             sendSucceeded = true;
         }
         catch (Exception e) {
-            System.out.println("error sending transaction to server");
+            System.out.println("error sending transaction to server (" + e.getMessage() + ")");
         }
         
         if (sendSucceeded) {
             DBConnector.changeTransactionState(transaction, TransactionState.SENDTOCENTRAL);
-        }
-        else {
+        } else {
             DBConnector.changeTransactionState(transaction, TransactionState.WAITING);
         }
+        
+        return sendSucceeded;
     }
 }

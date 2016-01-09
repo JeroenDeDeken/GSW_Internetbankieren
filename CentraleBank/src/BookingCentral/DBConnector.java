@@ -228,7 +228,6 @@ public class DBConnector {
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                result = null;
             }
         }
 

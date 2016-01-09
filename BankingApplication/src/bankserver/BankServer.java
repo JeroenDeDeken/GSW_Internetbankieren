@@ -26,8 +26,8 @@ public class BankServer {
     public static final String BANKING_NAME = "ABN Amro";
     public static final String BANKING_CODE = "ABN";
     private static final String SOAP_URL = "http://localhost:8080/BankServer";
-    private static final String CENTRAL_URL = "localhost";
-    private static final int CENTRAL_PORT = 4444;
+    public static final String CENTRAL_URL = "localhost";
+    public static final int CENTRAL_PORT = 4444;
     //Test PC
 //    public static final String BANKING_NAME = "Rabobank";
 //    public static final String BANKING_CODE = "RAB";
@@ -43,10 +43,7 @@ public class BankServer {
     public static void main(String[] args) {
         DBConnector.createDatabase();
         launchSoapClientService();
-        
-        mCentralConnection = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
-        Thread t = new Thread(mCentralConnection);
-        t.start();
+        launchSocket();
         
         Timer sendUnprocessedTransactionTimer = new Timer();
         sendUnprocessedTransactionTimer.schedule(new TimerTask() {
@@ -55,6 +52,14 @@ public class BankServer {
                 sendUnprocessedTransactions();
             }
         }, 1000, 60000);
+    }
+    
+    public BankServer() {
+        System.out.println("bankserver constructor");
+        
+        DBConnector.createDatabase();
+        launchSoapClientService();
+        launchSocket();
     }
     
     /**
@@ -72,6 +77,12 @@ public class BankServer {
         } catch (Exception ex) {
             System.err.println("Exception: " + ex.getMessage());
         }
+    }
+    
+    public static void launchSocket() {
+        mCentralConnection = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
+        Thread t = new Thread(mCentralConnection);
+        t.start();
     }
     
     /**
