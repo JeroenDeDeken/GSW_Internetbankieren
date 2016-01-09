@@ -57,6 +57,7 @@ public class DBConnector {
             if (connection != null) {
                 connection.close();
             }
+            connection = null;
             
             return true;
         } catch (SQLException ex) {

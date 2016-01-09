@@ -24,24 +24,23 @@ public class DBConnectorTest {
     @BeforeClass
     public static void setUpClass() {
         DBConnector.debug = true;
-        
-        DBConnector.createDatabase();
     }
     
     @AfterClass
     public static void tearDownClass() {
-        DBConnector.removeDatabase();
     }
     
     /**
      * executed before every test
      */
     @Before
-    public void setUp() {
+    public void setUp() {        
+        DBConnector.createDatabase();
     }
     
     @After
     public void tearDown() {
+        DBConnector.removeDatabase();
     }
 
     /**
