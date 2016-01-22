@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Jeroen
+ * @author Roy
  */
 public class TransactionHandlerTest {
     

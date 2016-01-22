@@ -1,6 +1,7 @@
 package bankServer;
 
 import bankserver.DBConnector;
+import bankserver.Account;
 import bankserver.Transaction;
 import bankserver.TransactionState;
 import java.util.UUID;
@@ -33,13 +34,16 @@ public class DBConnectorTest {
     }
     
     /**
-     * executed before every test
+     * Create the test database before every test
      */
     @Before
     public void setUp() {        
         DBConnector.createDatabase();
     }
     
+    /**
+     * Delete the test database after every test
+     */
     @After
     public void tearDown() {
         DBConnector.removeDatabase();
@@ -51,9 +55,8 @@ public class DBConnectorTest {
     @Test
     public void testConnect() {
         System.out.println("connect");
-        boolean expResult = true;
         boolean result = DBConnector.connect();
-        assertEquals(expResult, result);
+        assertTrue(result);
     }
 
     /**
@@ -63,29 +66,29 @@ public class DBConnectorTest {
      */
     @Test
     public void testCustomerAccount() { // Account class gives an Uncompilable source code error
-//        double newBalance = 100.0;
-//        Account account = new Account(0, 100);
-//        String IBANNumber = account.getIBAN();
-//        
-//        System.out.println("createNewCustomerAccount");
+        double newBalance = 100.0;
+        Account account = new Account(0, 100);
+        String IBANNumber = account.getIBAN();
+        
+        System.out.println("createNewCustomerAccount");
 //        String IBANNumber = "NL00RABO0123456789";
-//        boolean expCreateResult = true;
-//        boolean createResult = DBConnector.createNewCustomerAccount(account);
-//        assertEquals(expCreateResult, createResult);
-//
-//        System.out.println("getAccountBalance");
-//        double expGetResult = 0.0;
-//        double getResult = DBConnector.getAccountBalance(IBANNumber);
-//        assertEquals(expGetResult, getResult, 0.0);
-//    
-//        System.out.println("setAccountBalance");
-//        boolean expSetResult = true;
-//        boolean setResult = DBConnector.setAccountBalance(IBANNumber, newBalance);
-//        assertEquals(expSetResult, setResult);
-//        
-//        System.out.println("getAccountBalance");
-//        getResult = DBConnector.getAccountBalance(IBANNumber);
-//        assertEquals(newBalance, getResult, 0.0);
+        boolean expCreateResult = true;
+        boolean createResult = DBConnector.createNewCustomerAccount(account);
+        assertEquals(expCreateResult, createResult);
+
+        System.out.println("getAccountBalance");
+        double expGetResult = 0.0;
+        double getResult = DBConnector.getAccountBalance(IBANNumber);
+        assertEquals(expGetResult, getResult, 0.0);
+    
+        System.out.println("setAccountBalance");
+        boolean expSetResult = true;
+        boolean setResult = DBConnector.setAccountBalance(IBANNumber, newBalance);
+        assertEquals(expSetResult, setResult);
+        
+        System.out.println("getAccountBalance");
+        getResult = DBConnector.getAccountBalance(IBANNumber);
+        assertEquals(newBalance, getResult, 0.0);
     }
 
     /**
@@ -104,14 +107,13 @@ public class DBConnectorTest {
 
         System.out.println("insertTransaction");
         Transaction transaction = new Transaction(transactionId, debitor, creditor, amount, message, TransactionState.INITIAL);
-        boolean expResult = true;
         boolean result = DBConnector.insertTransaction(transaction);
-        assertEquals(expResult, result);
+        assertTrue(result);
         
         System.out.println("changeTransactionState");
         TransactionState state = TransactionState.WAITING;
         result = DBConnector.changeTransactionState(transaction, state);
-        assertEquals(expResult, result);
+        assertTrue(result);
         
         System.out.println("getUnprocessedTransactions");
         Iterable<Transaction> resultSet = DBConnector.getUnprocessedTransactions();
@@ -130,8 +132,7 @@ public class DBConnectorTest {
     @Test
     public void testDisconnect() {
         System.out.println("disconnect");
-        boolean expResult = true;
         boolean result = DBConnector.disconnect();
-        assertEquals(expResult, result);
+        assertTrue(result);
     }
 }

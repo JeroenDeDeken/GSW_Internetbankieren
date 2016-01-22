@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Jeroen
+ * @author Roy
  */
 public class DBConnectorTest {
     
@@ -31,13 +31,16 @@ public class DBConnectorTest {
     }
     
     /**
-     * executed before every test
+     * Create the test database before every test
      */
     @Before
     public void setUp() {        
         DBConnector.createDatabase();
     }
     
+    /**
+     * Delete the test database after every test
+     */
     @After
     public void tearDown() {
         DBConnector.removeDatabase();
@@ -68,12 +71,13 @@ public class DBConnectorTest {
         double amount = 100.0;
         String message = "Test transaction";
 
+        //Generate and insert a test transaction
         System.out.println("insertTransaction");
         Transaction transaction = new Transaction(transactionId, debitor, creditor, amount, message);
-        boolean expResult = true;
         boolean result = DBConnector.insertTransaction(transaction);
-        assertEquals(expResult, result);
+        assertTrue(result);
         
+        //Check if the inserted transaction is with the unprocessed transactions
         System.out.println("getUnprocessedTransactions");
         Iterable<Transaction> resultSet = DBConnector.getUnprocessedTransactions();
         int count = 0;
@@ -83,15 +87,17 @@ public class DBConnectorTest {
         }
         assertEquals(1, count);
         
+        //Check if the transaction state can be set to succeeded
         System.out.println("changeTransactionState");
         TransactionState state = TransactionState.SUCCEEDED;
         result = DBConnector.changeTransactionState(transaction, state);
-        assertEquals(expResult, result);
+        assertTrue(result);
         
+        //Check if the unprocessed transactions are empty now
         System.out.println("getUnprocessedTransactions");
         Set<Transaction> set = DBConnector.getUnprocessedTransactions();
         result = set.isEmpty();
-        assertEquals(expResult, result);
+        assertTrue(result);
     }
 
     /**
@@ -101,8 +107,7 @@ public class DBConnectorTest {
     @Test
     public void testDisconnect() {
         System.out.println("disconnect");
-        boolean expResult = true;
         boolean result = DBConnector.disconnect();
-        assertEquals(expResult, result);
+        assertTrue(result);
     }
 }

@@ -45,11 +45,20 @@ public class CentralConnectionTest {
         DBConnector.createDatabase();
     }
     
+    /**
+     * Delete the test database after every test
+     */
     @After
     public void tearDown() {
         DBConnector.removeDatabase();
     }
     
+    /**
+     * Test sending a transaction to central bank.
+     * Check if the transaction is send and processed.
+     * 
+     * If it could not connect a fail with the message 'Could not connect to the CentraleBank' is thrown.
+     */
     @Test
     public void testSend() {
         CentralConnection cc = new CentralConnection(BANKING_CODE, CENTRAL_URL, CENTRAL_PORT);
@@ -87,6 +96,9 @@ public class CentralConnectionTest {
         assertEquals(TransactionState.SUCCEEDED, transaction.getState());
     }
     
+    /**
+     * @return The test transaction used for the test
+     */
     private Transaction getTestTransaction() {
         long transactionId = UUID.randomUUID().getMostSignificantBits();
         String debitor = "TEST0123456789";
