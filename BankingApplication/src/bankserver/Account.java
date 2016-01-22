@@ -43,6 +43,10 @@ public class Account {
      * @param credit
      */
     public Account(Integer accountID, String IBAN, double balance, double credit) {
+        if (credit < 0) {
+            throw new IllegalArgumentException("Credit may not be negative");
+        }
+        
         this.balance = balance;
         this.credit = credit;
         if (accountID == null && IBAN == null) {
