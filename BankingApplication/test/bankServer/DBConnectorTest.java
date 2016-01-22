@@ -65,27 +65,28 @@ public class DBConnectorTest {
      * and add some money to the balance, this new value is checked as well.
      */
     @Test
-    public void testCustomerAccount() { // Account class gives an Uncompilable source code error
+    public void testCustomerAccount() {
         double newBalance = 100.0;
         Account account = new Account(0, 100);
         String IBANNumber = account.getIBAN();
         
+        //Check if a customer account can be created with a new IBAN
         System.out.println("createNewCustomerAccount");
-//        String IBANNumber = "NL00RABO0123456789";
-        boolean expCreateResult = true;
         boolean createResult = DBConnector.createNewCustomerAccount(account);
-        assertEquals(expCreateResult, createResult);
+        assertTrue(createResult);
 
+        //Check if the inital balance is set correctly
         System.out.println("getAccountBalance");
-        double expGetResult = 0.0;
-        double getResult = DBConnector.getAccountBalance(IBANNumber);
-        assertEquals(expGetResult, getResult, 0.0);
+        Double expGetResult = 0.0;
+        Double getResult = DBConnector.getAccountBalance(IBANNumber);
+        assertEquals(expGetResult, getResult);
     
+        //Check if the balance can be set correctly
         System.out.println("setAccountBalance");
-        boolean expSetResult = true;
         boolean setResult = DBConnector.setAccountBalance(IBANNumber, newBalance);
-        assertEquals(expSetResult, setResult);
+        assertTrue(setResult);
         
+        //Check if the balance is adjusted to the newly set
         System.out.println("getAccountBalance");
         getResult = DBConnector.getAccountBalance(IBANNumber);
         assertEquals(newBalance, getResult, 0.0);
@@ -105,16 +106,19 @@ public class DBConnectorTest {
         double amount = 100.0;
         String message = "Test transaction";
 
+        //Generate and insert a test transaction
         System.out.println("insertTransaction");
         Transaction transaction = new Transaction(transactionId, debitor, creditor, amount, message, TransactionState.INITIAL);
         boolean result = DBConnector.insertTransaction(transaction);
         assertTrue(result);
         
+        //Set the status of the transaction to waiting (for processing)
         System.out.println("changeTransactionState");
         TransactionState state = TransactionState.WAITING;
         result = DBConnector.changeTransactionState(transaction, state);
         assertTrue(result);
         
+        //Check if the transactions is within the unprocessed transactions
         System.out.println("getUnprocessedTransactions");
         Iterable<Transaction> resultSet = DBConnector.getUnprocessedTransactions();
         int count = 0;
